@@ -15,3 +15,7 @@
 *.exe
 *.out
 *.app
+echo_lake
+
+# Tags files
+tags
