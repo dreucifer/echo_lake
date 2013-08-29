@@ -1,0 +1,199 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ACTION	player.h	/^} ACTION;$/;"	t	typeref:enum:action_e
+ACTOR_H	actor.h	2;"	d
+APP	Makefile	/^APP=echo_lake$/;"	m
+ATTACK	player.h	/^    STOP, WALK, ATTACK, INSPECT$/;"	e	enum:action_e
+BPP	game.h	6;"	d
+CAUTION	player.h	/^    DEAD, DANGER, CAUTION, HURT, FINE$/;"	e	enum:health_e
+CFLAGS	Makefile	/^CFLAGS=-Wall -Wextra -g -std=c11 -fms-extensions -D_GNU_SOURCE -lSDL2_ttf -lSDL2_image -lSDL2_gfx `sdl2-config --libs --cflags` $/;"	m
+CHAR_DOWN	actor.h	/^    CHAR_UP, CHAR_DOWN, CHAR_LEFT, CHAR_RIGHT$/;"	e	enum:orientation_e
+CHAR_LEFT	actor.h	/^    CHAR_UP, CHAR_DOWN, CHAR_LEFT, CHAR_RIGHT$/;"	e	enum:orientation_e
+CHAR_RIGHT	actor.h	/^    CHAR_UP, CHAR_DOWN, CHAR_LEFT, CHAR_RIGHT$/;"	e	enum:orientation_e
+CHAR_UP	actor.h	/^    CHAR_UP, CHAR_DOWN, CHAR_LEFT, CHAR_RIGHT$/;"	e	enum:orientation_e
+CH_DOWN	position.h	/^    CH_UP, CH_DOWN, CH_LEFT, CH_RIGHT$/;"	e	enum:orient_e
+CH_LEFT	position.h	/^    CH_UP, CH_DOWN, CH_LEFT, CH_RIGHT$/;"	e	enum:orient_e
+CH_RIGHT	position.h	/^    CH_UP, CH_DOWN, CH_LEFT, CH_RIGHT$/;"	e	enum:orient_e
+CH_UP	position.h	/^    CH_UP, CH_DOWN, CH_LEFT, CH_RIGHT$/;"	e	enum:orient_e
+COGENT	player.h	/^    GONE, PSYCHOTIC, DELUSIONAL, PARANOID, COGENT$/;"	e	enum:sanity_e
+COMPONENTS_LIST	entity.h	/^enum COMPONENTS_LIST {$/;"	g
+DANGER	player.h	/^    DEAD, DANGER, CAUTION, HURT, FINE$/;"	e	enum:health_e
+DEAD	player.h	/^    DEAD, DANGER, CAUTION, HURT, FINE$/;"	e	enum:health_e
+DELUSIONAL	player.h	/^    GONE, PSYCHOTIC, DELUSIONAL, PARANOID, COGENT$/;"	e	enum:sanity_e
+DEPTH	game.h	7;"	d
+DIRECTION	motion.h	/^enum DIRECTION {$/;"	g
+DOWN	motion.h	/^    UP, DOWN, LEFT, RIGHT$/;"	e	enum:DIRECTION
+DirectoryOfThisScript	.ycm_extra_conf.py	/^def DirectoryOfThisScript():$/;"	f
+ECHO_LAKE_H	echo_lake.h	2;"	d
+ECS_H	entity.h	2;"	d
+FINE	player.h	/^    DEAD, DANGER, CAUTION, HURT, FINE$/;"	e	enum:health_e
+FPS	game.h	8;"	d
+FRAME	player.h	/^} FRAME;$/;"	t	typeref:enum:frame_e
+FRAMESKIP	game.h	10;"	d
+FlagsForFile	.ycm_extra_conf.py	/^def FlagsForFile( filename ):$/;"	f
+GAME_H	game.h	2;"	d
+GONE	player.h	/^    GONE, PSYCHOTIC, DELUSIONAL, PARANOID, COGENT$/;"	e	enum:sanity_e
+GRAPH_H	graph.h	2;"	d
+HEALTH	player.h	/^} HEALTH;$/;"	t	typeref:enum:health_e
+HEIGHT	game.h	5;"	d
+HURT	player.h	/^    DEAD, DANGER, CAUTION, HURT, FINE$/;"	e	enum:health_e
+IDLE	player.h	/^    STOPPED, IDLE, RIGHT_FOOT, LEFT_FOOT$/;"	e	enum:frame_e
+INSPECT	player.h	/^    STOP, WALK, ATTACK, INSPECT$/;"	e	enum:action_e
+KEY_DOWN	game.h	/^    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NUM_KEYS$/;"	e	enum:MYKEYS
+KEY_LEFT	game.h	/^    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NUM_KEYS$/;"	e	enum:MYKEYS
+KEY_RIGHT	game.h	/^    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NUM_KEYS$/;"	e	enum:MYKEYS
+KEY_UP	game.h	/^    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NUM_KEYS$/;"	e	enum:MYKEYS
+LEFT	motion.h	/^    UP, DOWN, LEFT, RIGHT$/;"	e	enum:DIRECTION
+LEFT_FOOT	player.h	/^    STOPPED, IDLE, RIGHT_FOOT, LEFT_FOOT$/;"	e	enum:frame_e
+MOTION_H	motion.h	2;"	d
+MYKEYS	game.h	/^enum MYKEYS {$/;"	g
+MakeRelativePathsInFlagsAbsolute	.ycm_extra_conf.py	/^def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):$/;"	f
+NUM_COMPONENTS	entity.h	/^    NUM_COMPONENTS$/;"	e	enum:COMPONENTS_LIST
+NUM_KEYS	game.h	/^    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NUM_KEYS$/;"	e	enum:MYKEYS
+OBJECTS	Makefile	/^OBJECTS= echo_lake.o player.o game.o position.o texture.o entity.o$/;"	m
+ORIENT	position.h	/^} ORIENT;$/;"	t	typeref:enum:orient_e
+ORIENTATION	actor.h	/^} ORIENTATION;$/;"	t	typeref:enum:orientation_e
+PARANOID	player.h	/^    GONE, PSYCHOTIC, DELUSIONAL, PARANOID, COGENT$/;"	e	enum:sanity_e
+PLAYER_H	player.h	2;"	d
+PLAYER_SIZE	game.h	9;"	d
+POSITION	entity.h	/^    POSITION,$/;"	e	enum:COMPONENTS_LIST
+POSITION_H	position.h	2;"	d
+PSYCHOTIC	player.h	/^    GONE, PSYCHOTIC, DELUSIONAL, PARANOID, COGENT$/;"	e	enum:sanity_e
+RIGHT	motion.h	/^    UP, DOWN, LEFT, RIGHT$/;"	e	enum:DIRECTION
+RIGHT_FOOT	player.h	/^    STOPPED, IDLE, RIGHT_FOOT, LEFT_FOOT$/;"	e	enum:frame_e
+SANITY	player.h	/^} SANITY;$/;"	t	typeref:enum:sanity_e
+SKIP_TICKS	echo_lake.c	/^const int SKIP_TICKS = 1000 \/ FPS;$/;"	v
+STEP_DX	player.c	/^const int STEP_DX = 40;$/;"	v
+STEP_DX	texture.c	7;"	d	file:
+STOP	player.h	/^    STOP, WALK, ATTACK, INSPECT$/;"	e	enum:action_e
+STOPPED	player.h	/^    STOPPED, IDLE, RIGHT_FOOT, LEFT_FOOT$/;"	e	enum:frame_e
+TEXTURE	entity.h	/^    TEXTURE,$/;"	e	enum:COMPONENTS_LIST
+TEXTURE_H	texture.h	2;"	d
+TITLE	game.h	11;"	d
+UP	motion.h	/^    UP, DOWN, LEFT, RIGHT$/;"	e	enum:DIRECTION
+WALK	player.h	/^    STOP, WALK, ATTACK, INSPECT$/;"	e	enum:action_e
+WIDTH	game.h	4;"	d
+action	player.h	/^    ACTION action;$/;"	m	struct:player_s
+action_e	player.h	/^typedef enum action_e {$/;"	g
+actor_p	actor.h	/^} actor_type, *actor_p;$/;"	t	typeref:struct:actor_s
+actor_s	actor.h	/^typedef struct actor_s {$/;"	s
+actor_type	actor.h	/^} actor_type, *actor_p;$/;"	t	typeref:struct:actor_s
+actor_type	player.h	/^    actor_type;$/;"	m	struct:player_s
+classproto	entity.h	4;"	d
+clipping	actor.h	/^    SDL_Rect clipping;$/;"	m	struct:actor_s
+compilation_database_folder	.ycm_extra_conf.py	/^compilation_database_folder = ''$/;"	v
+component	entity.h	/^classproto(component);$/;"	v
+component_s	entity.h	/^struct component_s {$/;"	s
+components	entity.h	/^    component_p components[NUM_COMPONENTS];$/;"	m	struct:entity_s
+data	graph.h	/^    void * data;$/;"	m	struct:node_s
+database	.ycm_extra_conf.py	/^  database = None$/;"	v
+database	.ycm_extra_conf.py	/^  database = ycm_core.CompilationDatabase( compilation_database_folder )$/;"	v
+delegate	entity.h	/^    void * delegate;$/;"	m	struct:component_s
+destroy	entity.h	/^    void (*destroy)(component_p self);$/;"	m	struct:component_s
+destroy_position	position.c	/^void destroy_position(component_p component) {$/;"	f
+destroy_texture	texture.c	/^void destroy_texture(component_p component) {$/;"	f
+direction	motion.h	/^    enum DIRECTION direction;$/;"	m	struct:motions_s	typeref:enum:motions_s::DIRECTION
+dx	player.h	/^    int dx;$/;"	m	struct:player_s
+edge_p	graph.h	/^typedef struct edge_s edge_type, *edge_p;$/;"	t	typeref:struct:
+edge_s	graph.h	/^struct edge_s {$/;"	s
+edge_type	graph.h	/^typedef struct edge_s edge_type, *edge_p;$/;"	t	typeref:struct:edge_s
+edges	graph.h	/^    edge_p edges;$/;"	m	struct:node_s
+entities	entity.h	/^    entity_p last, entities;$/;"	m	struct:world_s
+entity	entity.h	/^classproto(entity);$/;"	v
+entity_s	entity.h	/^struct entity_s {$/;"	s
+filename	texture.h	/^    char *filename;$/;"	m	struct:texture_s
+flags	.ycm_extra_conf.py	/^flags = [$/;"	v
+frame	player.h	/^    FRAME frame;$/;"	m	struct:player_s
+frame_e	player.h	/^typedef enum frame_e {$/;"	g
+frame_time	player.h	/^    int hold_time, frame_time;$/;"	m	struct:player_s
+game_constructor	game.c	/^game_p game_constructor(const char *title) {$/;"	f
+game_destructor	game.c	/^void game_destructor() {$/;"	f
+game_initialize	game.c	/^int game_initialize(game_p self) {$/;"	f
+game_p	game.h	/^typedef struct game_s game_type, *game_p;$/;"	t	typeref:struct:
+game_render	game.c	/^int game_render() {$/;"	f
+game_s	game.h	/^struct game_s {$/;"	s
+game_singleton	game.c	/^game_p game_singleton() {$/;"	f
+game_type	game.h	/^typedef struct game_s game_type, *game_p;$/;"	t	typeref:struct:game_s
+game_update	game.c	/^int game_update() {$/;"	f
+get	entity.h	/^    world_p (*get)(); \/\/ get singleton of world$/;"	m	struct:world_s
+get_position	position.c	/^SDL_Rect * get_position(void * component) {$/;"	f
+get_world	entity.c	/^world_p get_world() {$/;"	f
+graph_constructor	graph.c	/^graph_p graph_constructor() {$/;"	f
+graph_destructor	graph.c	/^void graph_destructor(graph_p self) {$/;"	f
+graph_initialize	graph.c	/^int graph_initialize(graph_p self) {$/;"	f
+graph_p	graph.h	/^typedef struct graph_s graph_type, *graph_p;$/;"	t	typeref:struct:
+graph_s	graph.h	/^struct graph_s {$/;"	s
+graph_type	graph.h	/^typedef struct graph_s graph_type, *graph_p;$/;"	t	typeref:struct:graph_s
+handle	game.h	/^    int (*handle)(game_p self);$/;"	m	struct:game_s
+handle_input	game.c	/^bool handle_input(SDL_Event *event_p) {$/;"	f
+health	player.h	/^    HEALTH health;$/;"	m	struct:player_s
+health_e	player.h	/^typedef enum health_e {$/;"	g
+hold_time	player.h	/^    int hold_time, frame_time;$/;"	m	struct:player_s
+image	actor.h	/^    SDL_Texture *image;$/;"	m	struct:actor_s
+init	entity.h	/^    _Bool init;$/;"	m	struct:world_s
+init	game.h	/^    bool init;$/;"	m	struct:game_s
+init_world	entity.c	/^int init_world(world_p self) {$/;"	f
+last	entity.h	/^    entity_p last, entities;$/;"	m	struct:world_s
+location_p	actor.h	/^} location_type, *location_p;$/;"	t	typeref:struct:location_s
+location_s	actor.h	/^typedef struct location_s {$/;"	s
+location_type	actor.h	/^    location_type;$/;"	m	struct:actor_s
+location_type	actor.h	/^} location_type, *location_p;$/;"	t	typeref:struct:location_s
+main	echo_lake.c	/^int main(int argc, char *argv[]) {$/;"	f
+motions_s	motion.h	/^struct motions_s {$/;"	s
+new_entity	entity.c	/^entity_p new_entity() {$/;"	f
+new_position	position.c	/^component_p new_position(int x, int y, int w, int h,$/;"	f
+new_texture	texture.c	/^component_p new_texture(const char *image_path, int w, int h) {$/;"	f
+next	entity.h	/^    entity_p next;$/;"	m	struct:entity_s
+next	graph.h	/^    edge_p next;$/;"	m	struct:edge_s
+next	graph.h	/^    node_p next;$/;"	m	struct:node_s
+node_p	graph.h	/^typedef struct node_s node_type, *node_p;$/;"	t	typeref:struct:
+node_s	graph.h	/^struct node_s {$/;"	s
+node_type	graph.h	/^typedef struct node_s node_type, *node_p;$/;"	t	typeref:struct:node_s
+nodes	graph.h	/^    node_p nodes;$/;"	m	struct:graph_s
+orient	actor.h	/^    ORIENTATION orient;$/;"	m	struct:actor_s
+orient_e	position.h	/^typedef enum orient_e {$/;"	g
+orientation	position.h	/^    ORIENT orientation;$/;"	m	struct:position_s
+orientation_e	actor.h	/^typedef enum orientation_e {$/;"	g
+os	.ycm_extra_conf.py	/^import os$/;"	i
+player_constructor	player.c	/^player_p player_constructor(char *filename, int loc_x, int loc_y,$/;"	f
+player_destructor	player.c	/^void player_destructor(player_p self) {$/;"	f
+player_p	player.h	/^typedef struct player_s player_type, *player_p;$/;"	t	typeref:struct:
+player_render	player.c	/^void player_render(player_p self, SDL_Renderer *renderer) {$/;"	f
+player_s	player.h	/^struct player_s {$/;"	s
+player_type	player.h	/^typedef struct player_s player_type, *player_p;$/;"	t	typeref:struct:player_s
+player_update	player.c	/^int player_update(player_p self, int dt, _Bool *key) {$/;"	f
+position	position.h	/^    SDL_Rect position;$/;"	m	struct:position_s
+position_p	position.h	/^} position_type, *position_p;$/;"	t	typeref:struct:position_s
+position_s	position.h	/^typedef struct position_s {$/;"	s
+position_type	position.h	/^} position_type, *position_p;$/;"	t	typeref:struct:position_s
+register_component	entity.c	/^int register_component(entity_p entity, enum COMPONENTS_LIST COMPONENT,$/;"	f
+render	game.h	/^    int (*render)(game_p self);$/;"	m	struct:game_s
+render	player.h	/^    void (*render)(player_p self, SDL_Renderer *renderer);$/;"	m	struct:player_s
+render_texture	texture.c	/^int render_texture(void * component, SDL_Rect* dstrect) {$/;"	f
+renderer	game.h	/^    SDL_Renderer *renderer;$/;"	m	struct:game_s
+sanity	player.h	/^    SANITY sanity;$/;"	m	struct:player_s
+sanity_e	player.h	/^typedef enum sanity_e {$/;"	g
+section	texture.h	/^    SDL_Rect section;$/;"	m	struct:texture_s
+set_sprite	actor.h	/^    void (*set_sprite)(void * self);$/;"	m	struct:actor_s
+set_sprite	player.c	/^void set_sprite(void * self_void) {$/;"	f
+sink	graph.h	/^    node_p sink;$/;"	m	struct:edge_s
+target_displacement	motion.h	/^    int target_displacement;$/;"	m	struct:motions_s
+texture	texture.h	/^    SDL_Texture *texture;$/;"	m	struct:texture_s
+texture_p	texture.h	/^} texture_type, *texture_p;$/;"	t	typeref:struct:texture_s
+texture_s	texture.h	/^typedef struct texture_s {$/;"	s
+texture_type	texture.h	/^} texture_type, *texture_p;$/;"	t	typeref:struct:texture_s
+title	game.h	/^    char *title;$/;"	m	struct:game_s
+total_displacement	motion.h	/^    int total_displacement;$/;"	m	struct:motions_s
+update	game.h	/^    int (*update)(game_p self);$/;"	m	struct:game_s
+update	player.h	/^    int (*update)(player_p self, int dt, _Bool *key);$/;"	m	struct:player_s
+velocity	motion.h	/^    int velocity;$/;"	m	struct:motions_s
+window	game.h	/^    SDL_Window *window;$/;"	m	struct:game_s
+world	entity.h	/^classproto(world);$/;"	v
+world_s	entity.h	/^struct world_s {$/;"	s
+x	actor.h	/^    int x, y;$/;"	m	struct:location_s
+y	actor.h	/^    int x, y;$/;"	m	struct:location_s
+ycm_core	.ycm_extra_conf.py	/^import ycm_core$/;"	i
