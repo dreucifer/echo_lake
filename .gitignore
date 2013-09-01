@@ -19,3 +19,6 @@ echo_lake
 
 # Tags files
 tags
+
+# YCM config
+.ycm*
