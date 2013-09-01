@@ -12,6 +12,7 @@ classproto(component);
 enum COMPONENTS_LIST {
     POSITION,
     TEXTURE,
+    MOTION,
     NUM_COMPONENTS
 };
 

@@ -12,6 +12,7 @@
 
 #include <SDL2/SDL.h>
 #include <stdbool.h>
+#include "entity.h"
 
 extern const int SKIP_TICKS;
 
@@ -39,6 +40,7 @@ game_p game_singleton();
 int game_input();
 int game_logic();
 int game_render();
-bool handle_input(SDL_Event *event_p);
+bool handle_input(entity_p entity);
+bool should_exit(SDL_Event *event_pointer);
 
 #endif

@@ -3,8 +3,8 @@
 #include "player.h"
 #include "game.h"
 #include "entity.h"
-#include "position.h"
-#include "texture.h"
+#include "components.h"
+#include "systems.h"
 
 const int SKIP_TICKS = 1000 / FPS;
 
@@ -12,21 +12,20 @@ int main(int argc, char *argv[]) {
 
     world_p world;
     game_p game;
+    entity_p player, player2;
+    SDL_Texture *background;
+    SDL_Surface *temp;
+    SDL_Rect bg_dest;
+    SDL_Event event;
+    Uint32 next_tick;
+    int sleep;
+
     if (game_singleton() == NULL) {
         fprintf(stderr, "Could not create game singleton\n");
         return -1;
     } else {
         game = game_singleton();
     }
-
-    entity_p player;
-    SDL_Texture *background;
-    SDL_Surface *temp;
-    SDL_Rect bg_dest;
-    SDL_Event event;
-    bool doexit = false;
-    Uint32 next_tick;
-    int sleep;
 
     atexit(SDL_Quit);
 
@@ -38,27 +37,41 @@ int main(int argc, char *argv[]) {
     world = get_world();
 
     player = new_entity(world);
+    player2 = new_entity(world);
 
     register_component(player, POSITION,
             new_position((WIDTH - 80) / 2, (HEIGHT - 80) / 2,
-                80, 80, CH_DOWN));
+                80, 80, DOWN));
 
     register_component(player, TEXTURE,
+            new_texture("sprites/ranger.png",
+                80, 80));
+
+    register_component(player, MOTION,
+            new_motion());
+
+    register_component(player2, POSITION,
+            new_position(100, 100, 80, 80, DOWN));
+
+    register_component(player2, TEXTURE,
             new_texture("sprites/ranger.png",
                 80, 80));
 
     sleep = 0;
     next_tick = SDL_GetTicks();
 
-    while(!doexit) {
-        doexit = handle_input(&event);
+    while(!should_exit(&event)) {
+        if (handle_input(player)) {
+            break;
+        }
+        game->update(game);
 
         SDL_RenderCopy(game->renderer, background, &bg_dest, NULL);
 
-        render_texture(player->components[TEXTURE],
-                get_position(player->components[POSITION]));
-
-        game->render(game);
+        if (game->render(game) != 0) {
+            fprintf(stderr, "Render failure!!\n");
+            break;
+        }
 
         next_tick += SKIP_TICKS;
         sleep = next_tick - SDL_GetTicks();

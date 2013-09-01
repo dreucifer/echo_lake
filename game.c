@@ -1,49 +1,60 @@
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 #include "game.h"
+#include "systems.h"
+#include "components.h"
 
-bool handle_input(SDL_Event *event_p) {
-    SDL_Event event = *(event_p);
-
-    while(SDL_PollEvent(&event)) {
-        switch(event.type){
+bool should_exit(SDL_Event *event) {
+    while(SDL_PollEvent(event)) {
+        switch(event->type){
             case SDL_QUIT:
                 return true;
                 break;
-
-            case SDL_KEYDOWN:
-                switch(event.key.keysym.sym) {
-                    case SDLK_ESCAPE:
-                        printf("\nGoodbye\n");
-                        break;
-                    default:
-                        fprintf(stderr, "\nUnhandled input\n");
-                        break;
-                }
-                break;
-
-            case SDL_KEYUP:
-                switch(event.key.keysym.sym) {
-                    case SDLK_ESCAPE:
-                        return true;
-                        break;
-                    default:
-                        fprintf(stderr, "\nUnhandled input\n");
-                        break;
-                }
+            default:
+                return false;
                 break;
         }
+    }
+    return false;
+}
+
+bool handle_input(entity_p entity) {
+    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+
+    if (keystate[SDL_SCANCODE_ESCAPE]) {
+        printf("\nGoodbye\n");
+        return true;
+    }
+
+    if (keystate[SDL_SCANCODE_UP]) {
+        add_motion(entity, UP);
+    }
+    if (keystate[SDL_SCANCODE_DOWN]) {
+        add_motion(entity, DOWN);
+    }
+    if (keystate[SDL_SCANCODE_LEFT]) {
+        add_motion(entity, LEFT);
+    }
+    if (keystate[SDL_SCANCODE_RIGHT]) {
+        add_motion(entity, RIGHT);
     }
 
     return false;
 }
 
 int game_update() {
+    walk_entities(get_world()->entities);
 
     return 0;
 }
 
 int game_render() {
+    render_entities(get_world()->entities);
+
     game_p self = game_singleton();
     SDL_RenderPresent(self->renderer);
 
