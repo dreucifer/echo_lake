@@ -15,7 +15,7 @@ SDL_Rect * get_position(entity_p self) {
 
 enum DIRECTION get_direction(entity_p self) {
     position_p self_pos = self->components[POSITION]->delegate;
-    return self_pos->orientation;
+    return self_pos->direction;
 }
 
 void set_position(entity_p self, SDL_Rect position) {
@@ -25,11 +25,11 @@ void set_position(entity_p self, SDL_Rect position) {
 
 void set_direction(entity_p self, enum DIRECTION direction) {
     position_p self_pos = self->components[POSITION]->delegate;
-    self_pos->orientation = direction;
+    self_pos->direction = direction;
 }
 
 component_p new_position(int x, int y, int w, int h,
-        enum DIRECTION orientation) {
+        enum DIRECTION direction) {
     component_p self = malloc(sizeof(component_type));
     position_p self_pos = malloc(sizeof(position_type));
     if (self == NULL) {
@@ -48,7 +48,7 @@ component_p new_position(int x, int y, int w, int h,
         .w = w,
         .h = h
     };
-    self_pos->orientation = orientation;
+    self_pos->direction = direction;
 
     self->delegate = self_pos;
     self->destroy = destroy_position;

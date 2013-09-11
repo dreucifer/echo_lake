@@ -14,7 +14,7 @@ enum DIRECTION {
 
 struct position_s {
     SDL_Rect position;
-    enum DIRECTION orientation;
+    enum DIRECTION direction;
 };
 
 struct motion_s {
@@ -29,7 +29,7 @@ struct texture_s {
 
 /* Position Component Functions */
 component_p new_position(int x, int y, int w, int h,
-        enum DIRECTION orientation);
+        enum DIRECTION direction);
 SDL_Rect * get_position(entity_p self);
 enum DIRECTION get_direction(entity_p self);
 void set_position(entity_p self, SDL_Rect position);
