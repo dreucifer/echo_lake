@@ -8,9 +8,24 @@
 #define STEP_DX 40
 #endif
 
-SDL_Rect * get_position(void * component) {
-    position_p * self = component;
-    return &(*self)->position;
+SDL_Rect * get_position(entity_p self) {
+    position_p self_pos = self->components[POSITION]->delegate;
+    return &(self_pos->position);
+}
+
+enum DIRECTION get_direction(entity_p self) {
+    position_p self_pos = self->components[POSITION]->delegate;
+    return self_pos->orientation;
+}
+
+void set_position(entity_p self, SDL_Rect position) {
+    position_p self_pos = self->components[POSITION]->delegate;
+    self_pos->position = position;
+}
+
+void set_direction(entity_p self, enum DIRECTION direction) {
+    position_p self_pos = self->components[POSITION]->delegate;
+    self_pos->orientation = direction;
 }
 
 component_p new_position(int x, int y, int w, int h,
@@ -59,12 +74,9 @@ component_p new_motion() {
         return NULL;
     }
 
-    self_mot->delta_tx = 0;
-    self_mot->delta_ty = 0;
-    self_mot->delta_cx = 0;
-    self_mot->delta_cx = 0;
-    self_mot->vel_x = 0;
-    self_mot->vel_y = 0;
+    self_mot->delta_t = 0;
+    self_mot->delta_c = 0;
+    self_mot->vel = 0;
 
     self->delegate = self_mot;
     self->destroy = destroy_motion;
@@ -72,45 +84,25 @@ component_p new_motion() {
     return self;
 }
 
-void add_motion(entity_p self, enum DIRECTION direction) {
+void set_motion(entity_p self, int vel) {
     struct motion_s *self_mot = self->components[MOTION]->delegate;
 
-    switch(direction) {
-        default:
-            self_mot->delta_cx += 0;
-            self_mot->delta_tx += 0;
-            self_mot->delta_cy += 0;
-            self_mot->delta_ty += 0;
-            self_mot->vel_x += 0;
-            self_mot->vel_y += 0;
-            break;
-        case DOWN:
-            self_mot->delta_ty = STEP_DX;
-            self_mot->vel_y = 4;
-            break;
-        case UP:
-            self_mot->delta_ty = -STEP_DX;
-            self_mot->vel_y = -4;
-            break;
-        case RIGHT:
-            self_mot->delta_tx = STEP_DX;
-            self_mot->vel_x = 4;
-            break;
-        case LEFT:
-            self_mot->delta_tx = -STEP_DX;
-            self_mot->vel_x = -4;
-            break;
+    if (get_vel(self) == 0) {
+        self_mot->delta_t = STEP_DX;
+        self_mot->vel = vel;
     }
+}
+
+int get_vel(entity_p self) {
+    struct motion_s *self_mot = self->components[MOTION]->delegate;
+    return self_mot->vel;
 }
 
 void clear_motion (entity_p self) {
     struct motion_s *self_mot = self->components[MOTION]->delegate;
-    self_mot->delta_tx = 0;
-    self_mot->delta_ty = 0;
-    self_mot->delta_cx = 0;
-    self_mot->delta_cx = 0;
-    self_mot->vel_x = 0;
-    self_mot->vel_y = 0;
+    self_mot->delta_t = 0;
+    self_mot->delta_c = 0;
+    self_mot->vel = 0;
 }
 
 void destroy_motion(component_p component) {
@@ -118,14 +110,45 @@ void destroy_motion(component_p component) {
     free(component);
 }
 
-int render_texture(void * component, SDL_Rect* dstrect) {
-    texture_p *self = component;
-    SDL_RenderCopy(
-            game_singleton()->renderer,
-            (*self)->texture,
-            &(*self)->section,
-            dstrect);
-    return 0;
+component_p new_texture(const char *image_path, int w, int h) {
+    component_p self = malloc(sizeof(struct component_s));
+    texture_p self_tex = malloc(sizeof(struct texture_s));
+    SDL_Texture *new_tex;
+    SDL_Surface *loaded_surface = IMG_Load(image_path);
+
+    if (loaded_surface == NULL) {
+        fprintf(stderr, "Unable to load image: %s! SDL_Image error: %s\n",
+                image_path, IMG_GetError());
+        return NULL;
+    } else {
+        new_tex = SDL_CreateTextureFromSurface(game_singleton()->renderer,
+                loaded_surface);
+    }
+
+    self_tex->texture = new_tex;
+    self_tex->section = (SDL_Rect){
+        .x = 0,
+        .y = 0,
+        .w = w,
+        .h = h
+    };
+
+    self->delegate = self_tex;
+    self->destroy = destroy_texture;
+
+    SDL_FreeSurface(loaded_surface);
+
+    return self;
+}
+
+SDL_Texture* get_texture(entity_p self) {
+    texture_p self_tex = self->components[TEXTURE]->delegate;
+    return self_tex->texture;
+}
+
+SDL_Rect* get_section(entity_p self) {
+    texture_p self_tex = self->components[TEXTURE]->delegate;
+    return &(self_tex->section);
 }
 
 void destroy_texture(component_p component) {
@@ -134,35 +157,3 @@ void destroy_texture(component_p component) {
     free(self);
     free(component);
 }
-
-component_p new_texture(const char *image_path, int w, int h) {
-    SDL_Texture *new_texture;
-    SDL_Surface *loaded_surface = IMG_Load(image_path);
-    texture_p self_texture = malloc(sizeof(struct texture_s));
-    component_p self = malloc(sizeof(struct component_s));
-
-    if (loaded_surface == NULL) {
-        fprintf(stderr, "Unable to load image: %s! SDL_Image error: %s\n",
-                image_path, IMG_GetError());
-        return NULL;
-    } else {
-        new_texture = SDL_CreateTextureFromSurface(game_singleton()->renderer,
-                loaded_surface);
-    }
-
-    self_texture->texture = new_texture;
-    self_texture->section = (SDL_Rect){
-        .x = 0,
-        .y = 0,
-        .w = w,
-        .h = h
-    };
-
-    self->delegate = self_texture;
-    self->destroy = destroy_texture;
-
-    SDL_FreeSurface(loaded_surface);
-
-    return self;
-}
-

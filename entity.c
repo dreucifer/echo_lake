@@ -1,6 +1,7 @@
 /* Entity-Component System*/
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "entity.h"
 
 world_p get_world() {
@@ -33,9 +34,11 @@ int init_world(world_p self) {
     return 0;
 }
 
-entity_p new_entity() {
+entity_p new_entity(const char *name) {
     world_p self = get_world();
     entity_p new_entity = malloc(sizeof(struct entity_s));
+
+    new_entity->name = strdup(name);
 
     new_entity->next = NULL;
     for (int i = 0; i < NUM_COMPONENTS; i++) {
@@ -45,10 +48,11 @@ entity_p new_entity() {
     if (self != NULL && new_entity != NULL) {
         if (self->entities == NULL) {
             self->entities = new_entity;
-            self->last = new_entity;
         } else {
             self->last->next = new_entity;
         }
+
+        self->last = new_entity;
     }
 
     return new_entity;

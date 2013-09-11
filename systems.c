@@ -1,19 +1,28 @@
+#include <SDL2/SDL.h>
+#include "game.h"
 #include "systems.h"
 #include "components.h"
 
 int render_entities(entity_p entity) {
-    if (entity->components[TEXTURE] != NULL &&
-            entity->components[POSITION] != NULL) {
+    component_p position = entity->components[POSITION];
+    component_p texture = entity->components[TEXTURE];
 
-        render_texture(entity->components[TEXTURE],
-                get_position(entity->components[POSITION]));
+    if (texture != NULL && position != NULL) {
+        SDL_RenderCopy(
+                game_singleton()->renderer,
+                get_texture(entity),
+                get_section(entity),
+                get_position(entity));
+
+    } else if (texture != NULL && position == NULL) {
+        SDL_RenderCopy(
+                game_singleton()->renderer,
+                get_texture(entity),
+                get_section(entity),
+                NULL);
     }
 
-    if (entity->next != NULL) {
-        return render_entities(entity->next);
-    }
-
-    return 0;
+    return (entity->next != NULL) ? render_entities(entity->next) : 0;
 }
 
 int walk_entities(entity_p entity) {
@@ -28,8 +37,23 @@ int walk_entities(entity_p entity) {
         self_mot =
             entity->components[MOTION]->delegate;
 
-        self_pos->position.x += self_mot->vel_x;
-        self_pos->position.y += self_mot->vel_y;
+        switch (get_direction(entity)) {
+            default:
+                break;
+            case UP:
+                fprintf(stderr, "UP\n");
+                self_pos->position.y += -self_mot->vel;
+                break;
+            case DOWN:
+                self_pos->position.y += self_mot->vel;
+                break;
+            case LEFT:
+                self_pos->position.x += -self_mot->vel;
+                break;
+            case RIGHT:
+                self_pos->position.x += self_mot->vel;
+                break;
+        }
 
         clear_motion(entity);
     }

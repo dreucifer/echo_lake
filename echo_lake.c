@@ -10,12 +10,8 @@ const int SKIP_TICKS = 1000 / FPS;
 
 int main(int argc, char *argv[]) {
 
-    world_p world;
     game_p game;
-    entity_p player, player2;
-    SDL_Texture *background;
-    SDL_Surface *temp;
-    SDL_Rect bg_dest;
+    entity_p background, player, obstacle;
     SDL_Event event;
     Uint32 next_tick;
     int sleep;
@@ -29,15 +25,14 @@ int main(int argc, char *argv[]) {
 
     atexit(SDL_Quit);
 
-    bg_dest = (SDL_Rect) { .x = 0, .y = 8, .w = WIDTH, .h = HEIGHT };
-    temp = IMG_Load("sprites/background.png");
-    background = SDL_CreateTextureFromSurface(game->renderer, temp);
-    SDL_FreeSurface(temp);
+    get_world();
 
-    world = get_world();
+    background = new_entity("background");
+    obstacle = new_entity("obstacle");
+    player = new_entity("actor");
 
-    player = new_entity(world);
-    player2 = new_entity(world);
+    register_component(background, TEXTURE,
+            new_texture("sprites/background.png", WIDTH, HEIGHT));
 
     register_component(player, POSITION,
             new_position((WIDTH - 80) / 2, (HEIGHT - 80) / 2,
@@ -50,10 +45,10 @@ int main(int argc, char *argv[]) {
     register_component(player, MOTION,
             new_motion());
 
-    register_component(player2, POSITION,
+    register_component(obstacle, POSITION,
             new_position(100, 100, 80, 80, DOWN));
 
-    register_component(player2, TEXTURE,
+    register_component(obstacle, TEXTURE,
             new_texture("sprites/ranger.png",
                 80, 80));
 
@@ -64,9 +59,8 @@ int main(int argc, char *argv[]) {
         if (handle_input(player)) {
             break;
         }
-        game->update(game);
 
-        SDL_RenderCopy(game->renderer, background, &bg_dest, NULL);
+        game->update(game);
 
         if (game->render(game) != 0) {
             fprintf(stderr, "Render failure!!\n");
@@ -80,10 +74,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    SDL_DestroyTexture(background);
-    destroy_position(player->components[POSITION]);
-    destroy_texture(player->components[TEXTURE]);
-    free(player);
     game_destructor(game);
     SDL_Quit();
 

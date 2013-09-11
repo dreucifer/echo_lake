@@ -23,6 +23,7 @@ bool should_exit(SDL_Event *event) {
 }
 
 bool handle_input(entity_p entity) {
+    static int hold_time;
     const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 
     if (keystate[SDL_SCANCODE_ESCAPE]) {
@@ -30,18 +31,30 @@ bool handle_input(entity_p entity) {
         return true;
     }
 
-    if (keystate[SDL_SCANCODE_UP]) {
-        add_motion(entity, UP);
+    if (entity->components[MOTION] != NULL) {
+        if (keystate[SDL_SCANCODE_UP]) {
+            set_motion(entity, 4);
+            set_direction(entity, UP);
+            hold_time++;
+        } 
+        if (keystate[SDL_SCANCODE_DOWN]) {
+            set_motion(entity, 4);
+            set_direction(entity, DOWN);
+            hold_time++;
+        }
+        if (keystate[SDL_SCANCODE_LEFT]) {
+            set_motion(entity, 4);
+            set_direction(entity, LEFT);
+            hold_time++;
+        }
+        if (keystate[SDL_SCANCODE_RIGHT]) {
+            set_motion(entity, 4);
+            set_direction(entity, RIGHT);
+            hold_time++;
+        }
     }
-    if (keystate[SDL_SCANCODE_DOWN]) {
-        add_motion(entity, DOWN);
-    }
-    if (keystate[SDL_SCANCODE_LEFT]) {
-        add_motion(entity, LEFT);
-    }
-    if (keystate[SDL_SCANCODE_RIGHT]) {
-        add_motion(entity, RIGHT);
-    }
+
+    fprintf(stderr, "%i\n", hold_time);
 
     return false;
 }

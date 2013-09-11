@@ -18,9 +18,7 @@ struct position_s {
 };
 
 struct motion_s {
-    int delta_tx, delta_cx;
-    int delta_ty, delta_cy;
-    int vel_x, vel_y;
+    int delta_t, delta_c, vel;
 };
 
 struct texture_s {
@@ -32,18 +30,23 @@ struct texture_s {
 /* Position Component Functions */
 component_p new_position(int x, int y, int w, int h,
         enum DIRECTION orientation);
-SDL_Rect * get_position(void * component);
+SDL_Rect * get_position(entity_p self);
+enum DIRECTION get_direction(entity_p self);
+void set_position(entity_p self, SDL_Rect position);
+void set_direction(entity_p self, enum DIRECTION direction);
 void destroy_position(component_p component);
 
 /* Motion Component Functions */
 component_p new_motion();
-void add_motion(entity_p self, enum DIRECTION direction);
+void set_motion(entity_p self, int vel);
+int get_vel(entity_p self);
 void clear_motion (entity_p self);
 void destroy_motion(component_p component);
 
-/* Motion Component Functions */
+/* Texture Component Functions */
 component_p new_texture(const char *texturepath, int w, int h);
-int render_texture(void * component, SDL_Rect* dstrect);
+SDL_Texture* get_texture(entity_p self);
+SDL_Rect* get_section(entity_p self);
 void destroy_texture(component_p component);
 
 #endif

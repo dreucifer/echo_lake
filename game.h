@@ -16,10 +16,6 @@
 
 extern const int SKIP_TICKS;
 
-enum MYKEYS {
-    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, NUM_KEYS
-};
-
 typedef struct game_s game_type, *game_p;
 
 struct game_s {

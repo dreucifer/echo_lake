@@ -25,6 +25,7 @@ struct world_s {
 struct entity_s {
     entity_p next;
     component_p components[NUM_COMPONENTS];
+    const char *name;
 };
 
 struct component_s {
@@ -35,7 +36,7 @@ struct component_s {
 extern world_p get_world();
 int init_world(world_p self);
 void shutdown_world();
-entity_p new_entity();
+entity_p new_entity(const char *name);
 int register_component(entity_p entity, enum COMPONENTS_LIST COMPONENT,
         component_p component);
 void destroy_component(component_p self);
