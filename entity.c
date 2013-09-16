@@ -58,6 +58,17 @@ entity_p new_entity(const char *name) {
     return new_entity;
 }
 
+entity_p find_entity(const char *name, entity_p entity) {
+    if (strcmp(entity->name, name) == 0) {
+      return entity;
+    } else {
+      if (entity->next != NULL) 
+        return find_entity(name, entity->next);
+    }
+
+    return NULL;
+}
+
 int register_component(entity_p entity, enum COMPONENTS_LIST COMPONENT,
         component_p component) {
     entity->components[COMPONENT] = component;

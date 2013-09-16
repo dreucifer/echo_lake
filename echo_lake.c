@@ -9,10 +9,10 @@
 const int SKIP_TICKS = 1000 / FPS;
 
 int main(int argc, char *argv[]) {
-
     game_p game;
     entity_p background, player, obstacle;
     SDL_Event event;
+    SDL_Rect position;
     Uint32 next_tick;
     int sleep;
 
@@ -29,14 +29,18 @@ int main(int argc, char *argv[]) {
 
     background = new_entity("background");
     obstacle = new_entity("obstacle");
-    player = new_entity("actor");
+    player = new_entity("player");
 
     register_component(background, TEXTURE,
             new_texture("sprites/background.png", WIDTH, HEIGHT));
 
+    position.x = (WIDTH - 80) / 2;
+    position.y = (HEIGHT - 80) / 2;
+    position.w = 80;
+    position.h = 80;
+
     register_component(player, POSITION,
-            new_position((WIDTH - 80) / 2, (HEIGHT - 80) / 2,
-                80, 80, DOWN));
+            new_pos(position, DOWN));
 
     register_component(player, TEXTURE,
             new_texture("sprites/ranger.png",
@@ -45,8 +49,11 @@ int main(int argc, char *argv[]) {
     register_component(player, MOTION,
             new_motion());
 
+    position.x = 100;
+    position.y = 100;
+
     register_component(obstacle, POSITION,
-            new_position(100, 100, 80, 80, DOWN));
+            new_pos(position, DOWN));
 
     register_component(obstacle, TEXTURE,
             new_texture("sprites/ranger.png",

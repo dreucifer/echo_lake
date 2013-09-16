@@ -4,63 +4,83 @@
 #include "components.h"
 
 int render_entities(entity_p entity) {
-    component_p position = entity->components[POSITION];
-    component_p texture = entity->components[TEXTURE];
+  component_p position = entity->components[POSITION];
+  component_p texture = entity->components[TEXTURE];
+  SDL_Rect *screen_pos = malloc(sizeof(SDL_Rect));
 
-    if (texture != NULL && position != NULL) {
-        SDL_RenderCopy(
-                game_singleton()->renderer,
-                get_texture(entity),
-                get_section(entity),
-                get_position(entity));
-
-    } else if (texture != NULL && position == NULL) {
-        SDL_RenderCopy(
-                game_singleton()->renderer,
-                get_texture(entity),
-                get_section(entity),
-                NULL);
+  if (texture != NULL && position != NULL) {
+    *screen_pos = get_screen_pos(entity);
+    if (screen_pos != NULL) {
+      SDL_RenderCopy(
+          game_singleton()->renderer,
+          get_texture(entity),
+          get_section(entity),
+          screen_pos);
     }
 
-    return (entity->next != NULL) ? render_entities(entity->next) : 0;
+  } else if (texture != NULL && position == NULL) {
+    SDL_RenderCopy(
+        game_singleton()->renderer,
+        get_texture(entity),
+        get_section(entity),
+        NULL);
+  }
+  
+  free(screen_pos);
+  return (entity->next != NULL) ? render_entities(entity->next) : 0;
 }
 
 int walk_entities(entity_p entity) {
-    position_p self_pos;
-    motion_p self_mot;
+  position_p self_pos;
+  motion_p self_mot;
 
-    if (entity->components[POSITION] != NULL &&
-            entity->components[MOTION] != NULL)  {
+  if (entity->components[POSITION] != NULL &&
+      entity->components[MOTION] != NULL)  {
 
-        self_pos =
-            entity->components[POSITION]->delegate;
-        self_mot =
-            entity->components[MOTION]->delegate;
+    self_pos =
+      entity->components[POSITION]->delegate;
+    self_mot =
+      entity->components[MOTION]->delegate;
 
-        switch (get_direction(entity)) {
-            default:
-                break;
-            case UP:
-                fprintf(stderr, "UP\n");
-                self_pos->position.y += -self_mot->vel;
-                break;
-            case DOWN:
-                self_pos->position.y += self_mot->vel;
-                break;
-            case LEFT:
-                self_pos->position.x += -self_mot->vel;
-                break;
-            case RIGHT:
-                self_pos->position.x += self_mot->vel;
-                break;
-        }
-
-        clear_motion(entity);
+    switch (get_dir(entity)) {
+      default:
+        break;
+      case UP:
+        self_pos->world_pos.y += -self_mot->vel;
+        break;
+      case DOWN:
+        self_pos->world_pos.y += self_mot->vel;
+        break;
+      case LEFT:
+        self_pos->world_pos.x += -self_mot->vel;
+        break;
+      case RIGHT:
+        self_pos->world_pos.x += self_mot->vel;
+        break;
     }
 
-    if (entity->next != NULL) {
-        return walk_entities(entity->next);
+    if (self_pos->world_pos.x < 0) {
+      self_pos->world_pos.x = 0;
     }
 
-    return 0;
+    if (self_pos->world_pos.y < 0) {
+      self_pos->world_pos.y = 0;
+    }
+
+    clear_motion(entity);
+  }
+
+  if (entity->next != NULL) {
+    return walk_entities(entity->next);
+  }
+
+  return 0;
+}
+
+void update_screen_pos(entity_p entity) {
+  SDL_Rect world_pos;
+  position_p self_pos = entity->components[POSITION]->delegate;
+  if (self_pos != NULL) {
+    world_pos = self_pos->world_pos;
+  }
 }

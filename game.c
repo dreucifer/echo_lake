@@ -32,35 +32,65 @@ bool handle_input(entity_p entity) {
     }
 
     if (entity->components[MOTION] != NULL) {
-        if (keystate[SDL_SCANCODE_UP]) {
-            set_motion(entity, 4);
-            set_direction(entity, UP);
+        if (
+                keystate[SDL_SCANCODE_UP] ||
+                keystate[SDL_SCANCODE_DOWN] ||
+                keystate[SDL_SCANCODE_LEFT] ||
+                keystate[SDL_SCANCODE_RIGHT]) {
             hold_time++;
+        } else {
+            hold_time = 0;
+        }
+        if (keystate[SDL_SCANCODE_UP] && !keystate[SDL_SCANCODE_DOWN] &&
+                hold_time > 3) {
+            set_motion(entity, 4);
+            set_dir(entity, UP);
         } 
-        if (keystate[SDL_SCANCODE_DOWN]) {
+        if (keystate[SDL_SCANCODE_DOWN] && !keystate[SDL_SCANCODE_UP] &&
+                hold_time > 3) {
             set_motion(entity, 4);
-            set_direction(entity, DOWN);
-            hold_time++;
+            set_dir(entity, DOWN);
         }
-        if (keystate[SDL_SCANCODE_LEFT]) {
+        if (keystate[SDL_SCANCODE_LEFT] && !keystate[SDL_SCANCODE_RIGHT] &&
+                hold_time > 3) {
             set_motion(entity, 4);
-            set_direction(entity, LEFT);
-            hold_time++;
+            set_dir(entity, LEFT);
         }
-        if (keystate[SDL_SCANCODE_RIGHT]) {
+        if (keystate[SDL_SCANCODE_RIGHT] && !keystate[SDL_SCANCODE_LEFT] &&
+                hold_time > 3) {
             set_motion(entity, 4);
-            set_direction(entity, RIGHT);
-            hold_time++;
+            set_dir(entity, RIGHT);
         }
     }
-
-    fprintf(stderr, "%i\n", hold_time);
 
     return false;
 }
 
+void scroll_background(entity_p background, entity_p player) {
+    texture_p bg_tex = background->components[TEXTURE]->delegate;
+    SDL_Rect *player_pos = get_world_pos(player);
+    SDL_Rect *bg_pos = &(bg_tex->section);
+    bg_pos->x = (player_pos->x > (WIDTH / 2) - 40) ?
+        player_pos->x + 40 - (WIDTH / 2) : 0;
+    bg_pos->y = (player_pos->y > (HEIGHT / 2) - 40) ?
+        player_pos->y + 40 - (HEIGHT / 2) : 0;
+    bg_pos->w = WIDTH;
+    bg_pos->h = HEIGHT;
+    set_section(background, bg_pos);
+}
+
+entity_p get_background() {
+    return find_entity("background", get_world()->entities);
+}
+
+entity_p get_player() {
+    return find_entity("player", get_world()->entities);
+}
+
 int game_update() {
     walk_entities(get_world()->entities);
+
+    scroll_background(get_background(), get_player());
 
     return 0;
 }
