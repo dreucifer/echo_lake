@@ -2,7 +2,7 @@ CFLAGS=-Wall -Wextra -g -std=c11 -fms-extensions -D_GNU_SOURCE -lSDL2_ttf -lSDL2
 
 APP=echo_lake
 
-OBJECTS= echo_lake.o player.o game.o components.o entity.o systems.o
+OBJECTS= echo_lake.o player.o game.o components.o entity.o systems.o tmx.o
 
 all: $(OBJECTS)
 	gcc -o $(APP) $(CFLAGS) $(OBJECTS)
@@ -16,7 +16,7 @@ player.o: player.c player.h actor.h
 game.o: game.c game.h systems.h components.h
 	gcc -c $(CFLAGS) game.c
 
-entity.o: entity.c entity.h
+entity.o: entity.c entity.h macros.h
 	gcc -c $(CFLAGS) entity.c
 
 components.o: components.c components.h game.h entity.h
@@ -24,6 +24,9 @@ components.o: components.c components.h game.h entity.h
 
 systems.o: systems.c systems.h components.h entity.h
 	gcc -c $(CFLAGS) systems.c
+
+tmx.o: tmx.c tmx.h macros.h
+	gcc -c $(CFLAGS) tmx.c
 
 clean:
 	rm -rf *.o echo_lake

@@ -22,3 +22,6 @@ tags
 
 # YCM config
 .ycm*
+
+# vim swaps
+*.swp

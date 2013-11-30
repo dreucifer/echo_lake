@@ -2,6 +2,7 @@
 #define _GNU_SOURCE
 #endif
 
+#include <SDL2/SDL_image.h>
 #include <stdlib.h>
 #include <string.h>
 #include "game.h"
@@ -99,6 +100,7 @@ int game_render() {
     render_entities(get_world()->entities);
 
     game_p self = game_singleton();
+
     SDL_RenderPresent(self->renderer);
 
     return 0;

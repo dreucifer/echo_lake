@@ -1,8 +1,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#define classdef(NAME) typedef struct NAME##_s NAME##_type, *NAME##_p
-
+#include "macros.h"
 #include <stdbool.h>
 
 classdef(world);
