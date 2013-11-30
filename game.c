@@ -97,7 +97,7 @@ int game_update() {
 }
 
 int game_render() {
-    render_entities(get_world()->entities);
+//    render_entities(get_world()->entities);
 
     game_p self = game_singleton();
 

@@ -11,100 +11,122 @@
 const int SKIP_TICKS = 1000 / FPS;
 
 int main(int argc, char *argv[]) {
-  game_p game;
-  entity_p background, player, obstacle;
-  SDL_Event event;
-  SDL_Rect position;
-  Uint32 next_tick;
-  int sleep;
+        game_p game;
+        entity_p background, player, obstacle;
+        SDL_Event event;
+        SDL_Rect position;
+        Uint32 next_tick;
+        int sleep;
 
-  if (game_singleton() == NULL) {
-    fprintf(stderr, "Could not create game singleton\n");
-    return -1;
-  } else {
-    game = game_singleton();
-  }
+        if (game_singleton() == NULL) {
+                fprintf(stderr, "Could not create game singleton\n");
+                return -1;
+        } else {
+                game = game_singleton();
+        }
 
-  atexit(SDL_Quit);
+        atexit(SDL_Quit);
 
-  SDL_Surface *tiles_img;
-  tiles_img = IMG_Load("img/tiles/mansionset.png");
-  if (tiles_img == NULL) {
-    fprintf(stderr, "Unable to load image: %s! SDL_Image error: %s\n", "img/tiles/mansionset.png", IMG_GetError());
-  }
+        get_world();
 
-  tileset_p tileset01 = tileset(
-      5, "background", 80, 80, 0, 0, tiles_img
-      );
+        background = new_entity("background");
+        obstacle = new_entity("obstacle");
+        player = new_entity("player");
 
+        register_component(background, TEXTURE,
+                        new_texture("img/background.png", WIDTH, HEIGHT));
 
-  get_world();
+        position.x = (WIDTH - 80) / 2;
+        position.y = (HEIGHT - 80) / 2;
+        position.w = 80;
+        position.h = 80;
 
-  background = new_entity("background");
-  obstacle = new_entity("obstacle");
-  player = new_entity("player");
+        tileset_p tileset01 = tileset(0, "bg", 80, 80,
+                        IMG_Load("img/tiles/mansionset.png"));
 
-  register_component(background, TEXTURE,
-      new_texture("img/background.png", WIDTH, HEIGHT));
+        layer_p layer01 = layer("bg", 1.0, true);
 
-  position.x = (WIDTH - 80) / 2;
-  position.y = (HEIGHT - 80) / 2;
-  position.w = 80;
-  position.h = 80;
+        unsigned data[] = {
+                12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 1, 2, 1, 2, 1, 2, 1, 9, 2, 1, 2, 1, 2, 1, 2, 10, 11, 10, 11, 10, 11, 10, 12, 11, 10, 11, 10, 11, 10, 11, 13, 14, 13, 14, 13, 14, 13, 15, 14, 13, 14, 13, 14, 13, 14, 1, 2, 1, 2, 1, 2, 1, 9, 2, 1, 2, 1, 2, 1, 2, 10, 11, 10, 11, 10, 11, 10, 12, 11, 10, 11, 10, 11, 10, 11, 13, 14, 13, 14, 13, 14, 13, 15, 14, 13, 14, 13, 14, 13, 14, 4, 5, 4, 5, 4, 5, 4, 9, 5, 4, 5, 4, 5, 4, 5, 7, 8, 7, 8, 7, 8, 7, 0, 8, 7, 8, 7, 8, 7, 8, 3, 3, 3, 3, 3, 3, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 6, 0, 3, 14, 13, 3, 3, 14, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+        };
 
-  register_component(player, POSITION,
-      new_pos(position, DOWN));
+        int count = sizeof(data) / sizeof(unsigned);
+        for (int i = 0; i < count; i++) {
+                add_cell(layer01, data[i]);
+        }
 
-  register_component(player, TEXTURE,
-      new_texture("img/ranger.png",
-        80, 80));
+        tilemap_p tilemap01 = tilemap(
+                        15, 15, 80, 80);
 
-  register_component(player, MOTION,
-      new_motion());
+        add_layer(tilemap01, layer01, tileset01);
 
-  position.x = 100;
-  position.y = 100;
+        SDL_Texture *bg;
 
-  register_component(obstacle, POSITION,
-      new_pos(position, DOWN));
+        SDL_BlitSurface(
+                tilemap01->tilesets[0]->image,
+                NULL,
+                tilemap01->image,
+                &(SDL_Rect){
+                        .x = 0,
+                        .y = 0,
+                        .w = 80,
+                        .h = 80
+                }
+        );
 
-  register_component(obstacle, TEXTURE,
-      new_texture("img/ranger.png",
-        80, 80));
+        register_component(player, POSITION,
+                        new_pos(position, DOWN));
 
-  sleep = 0;
-  next_tick = SDL_GetTicks();
+        register_component(player, TEXTURE,
+                        new_texture("img/ranger.png",
+                                80, 80));
 
-  while(!should_exit(&event)) {
-    if (handle_input(player)) {
-      break;
-    }
+        register_component(player, MOTION,
+                        new_motion());
 
-    game->update(game);
+        position.x = 100;
+        position.y = 100;
 
-    if (game->render(game) != 0) {
-      fprintf(stderr, "Render failure!!\n");
-      break;
-    }
+        register_component(obstacle, POSITION,
+                        new_pos(position, DOWN));
 
-    SDL_RenderCopy(
-        game->renderer,
-        SDL_CreateTextureFromSurface(game->renderer, tileset01->image),
-        &tileset01->tiles[5].source,
-        &tileset01->tiles[0].source);
+        register_component(obstacle, TEXTURE,
+                        new_texture("img/ranger.png",
+                                80, 80));
 
-    next_tick += SKIP_TICKS;
-    sleep = next_tick - SDL_GetTicks();
-    if (sleep > 0) {
-      SDL_Delay(sleep);
-    }
-  }
+        sleep = 0;
+        next_tick = SDL_GetTicks();
 
-  game_destructor(game);
-  del_tileset(tileset01);
-  SDL_Quit();
+        while(!should_exit(&event)) {
+                if (handle_input(player)) {
+                        break;
+                }
 
-  return 0;
+                game->update(game);
+
+                bg = SDL_CreateTextureFromSurface(
+                                game_singleton()->renderer,
+                                tilemap01->image
+                                );
+                SDL_RenderCopy(
+                                game_singleton()->renderer,
+                                bg, NULL, NULL
+                              );
+
+                if (game->render(game) != 0) {
+                        fprintf(stderr, "Render failure!!\n");
+                        break;
+                }
+
+                next_tick += SKIP_TICKS;
+                sleep = next_tick - SDL_GetTicks();
+                if (sleep > 0) {
+                        SDL_Delay(sleep);
+                }
+        }
+
+        game_destructor(game);
+        SDL_Quit();
+
+        return 0;
 }
-
-
