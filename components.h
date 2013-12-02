@@ -85,6 +85,7 @@ struct texture_s {
 
 /* Texture Component Functions */
 component_p new_texture(const char *texturepath, int w, int h);
+component_p from_texture(SDL_Texture *new_tex, int w, int h);
 SDL_Texture* get_texture(entity_p self);
 SDL_Rect* get_section(entity_p self);
 void set_section(entity_p self, SDL_Rect *section);

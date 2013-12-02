@@ -150,6 +150,25 @@ component_p new_texture(const char *image_path, int w, int h) {
   return self;
 }
 
+component_p from_texture(SDL_Texture *new_tex, int w, int h)
+{
+  component_p self = malloc(sizeof(struct component_s));
+  texture_p self_tex = malloc(sizeof(struct texture_s));
+
+  self_tex->texture = new_tex;
+  self_tex->section = (SDL_Rect){
+    .x = 0,
+      .y = 0,
+      .w = w,
+      .h = h
+  };
+
+  self->delegate = self_tex;
+  self->del = del_texture;
+
+  return self;
+}
+
 SDL_Texture* get_texture(entity_p self) {
   texture_p self_tex = self->components[TEXTURE]->delegate;
   return self_tex->texture;

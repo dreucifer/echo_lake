@@ -76,11 +76,3 @@ int walk_entities(entity_p entity) {
 
   return 0;
 }
-
-void update_screen_pos(entity_p entity) {
-  SDL_Rect world_pos;
-  position_p self_pos = entity->components[POSITION]->delegate;
-  if (self_pos != NULL) {
-    world_pos = self_pos->world_pos;
-  }
-}

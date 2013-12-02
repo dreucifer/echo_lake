@@ -1,8 +1,8 @@
-CFLAGS=-Wall -Wextra -g -std=c11 -fms-extensions -D_GNU_SOURCE -lSDL2_ttf -lSDL2_image -lSDL2_gfx `sdl2-config --libs --cflags` 
+CFLAGS=-Wall -Wextra -Werror -pedantic -g -std=c11 -fms-extensions -D_GNU_SOURCE -lSDL2_ttf -lSDL2_image -lSDL2_gfx `sdl2-config --libs --cflags` `pkg-config --libs --cflags jansson`
 
 APP=echo_lake
 
-OBJECTS= echo_lake.o player.o game.o components.o entity.o systems.o tmx.o
+OBJECTS=echo_lake.o player.o game.o components.o entity.o systems.o tmx.o
 
 all: $(OBJECTS)
 	gcc -o $(APP) $(CFLAGS) $(OBJECTS)

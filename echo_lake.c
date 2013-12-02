@@ -10,7 +10,8 @@
 
 const int SKIP_TICKS = 1000 / FPS;
 
-int main(int argc, char *argv[]) {
+int main()
+{
         game_p game;
         entity_p background, player, obstacle;
         SDL_Event event;
@@ -19,7 +20,7 @@ int main(int argc, char *argv[]) {
         int sleep;
 
         if (game_singleton() == NULL) {
-                fprintf(stderr, "Could not create game singleton\n");
+                fprintf(stderr, "[ERROR] Could not create game singleton\n");
                 return -1;
         } else {
                 game = game_singleton();
@@ -33,46 +34,77 @@ int main(int argc, char *argv[]) {
         obstacle = new_entity("obstacle");
         player = new_entity("player");
 
-        register_component(background, TEXTURE,
-                        new_texture("img/background.png", WIDTH, HEIGHT));
-
         position.x = (WIDTH - 80) / 2;
         position.y = (HEIGHT - 80) / 2;
         position.w = 80;
         position.h = 80;
 
-        tileset_p tileset01 = tileset(0, "bg", 80, 80,
+        tileset_p tileset01 = tileset(1, "bg", 80, 80,
                         IMG_Load("img/tiles/mansionset.png"));
 
         layer_p layer01 = layer("bg", 1.0, true);
+        layer_p layer02 = layer("fg", 1.0, true);
 
-        unsigned data[] = {
-                12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 1, 2, 1, 2, 1, 2, 1, 9, 2, 1, 2, 1, 2, 1, 2, 10, 11, 10, 11, 10, 11, 10, 12, 11, 10, 11, 10, 11, 10, 11, 13, 14, 13, 14, 13, 14, 13, 15, 14, 13, 14, 13, 14, 13, 14, 1, 2, 1, 2, 1, 2, 1, 9, 2, 1, 2, 1, 2, 1, 2, 10, 11, 10, 11, 10, 11, 10, 12, 11, 10, 11, 10, 11, 10, 11, 13, 14, 13, 14, 13, 14, 13, 15, 14, 13, 14, 13, 14, 13, 14, 4, 5, 4, 5, 4, 5, 4, 9, 5, 4, 5, 4, 5, 4, 5, 7, 8, 7, 8, 7, 8, 7, 0, 8, 7, 8, 7, 8, 7, 8, 3, 3, 3, 3, 3, 3, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 6, 0, 3, 14, 13, 3, 3, 14, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+        int data1[] = {
+                3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+                        3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
+        };
+        int data2[] = {
+                12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,
+                        1,2,1,2,1,2,1,9,2,1,2,1,2,1,2,
+                        10,11,10,11,10,11,10,12,11,10,11,10,11,10,11,
+                        13,14,13,14,13,14,13,15,14,13,14,13,14,13,14,
+                        1,2,1,2,1,2,1,9,2,1,2,1,2,1,2,
+                        10,11,10,11,10,11,10,12,11,10,11,10,11,10,11,
+                        13,14,13,14,13,14,13,15,14,13,14,13,14,13,14,
+                        4,5,4,5,4,5,4,9,5,4,5,4,5,4,5,
+                        7,8,7,8,7,8,7,0,8,7,8,7,8,7,8,
+                        10,11,10,11,10,11,7,0,8,10,11,10,11,10,11,
+                        13,14,13,14,13,14,10,12,11,13,14,13,14,13,14,
+                        0,0,0,0,0,16,17,17,17,18,0,0,0,0,0,
+                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
         };
 
-        int count = sizeof(data) / sizeof(unsigned);
+        int count = sizeof(data1) / sizeof(unsigned);
         for (int i = 0; i < count; i++) {
-                add_cell(layer01, data[i]);
+                layer_add_cells(layer01, data1[i]);
         }
 
-        tilemap_p tilemap01 = tilemap(
-                        15, 15, 80, 80);
+        for (int i = 0; i < count; i++) {
+                layer_add_cells(layer02, data2[i]);
+        }
 
-        add_layer(tilemap01, layer01, tileset01);
+        tilemap_p tilemap02 = load_tmx_json("maps/level1.json");
+        add_layer(&(tilemap02->layers), layer01);
+        add_layer(&(tilemap02->layers), layer02);
+        add_tileset(&(tilemap02->tilesets), tileset01);
+
+        blit_map(tilemap02, "bg");
+        blit_map(tilemap02, "fg");
 
         SDL_Texture *bg;
+        bg = SDL_CreateTextureFromSurface(
+                        game_singleton()->renderer,
+                        tilemap02->image
+                        );
 
-        SDL_BlitSurface(
-                tilemap01->tilesets[0]->image,
-                NULL,
-                tilemap01->image,
-                &(SDL_Rect){
-                        .x = 0,
-                        .y = 0,
-                        .w = 80,
-                        .h = 80
-                }
-        );
+        register_component(background, TEXTURE,
+                        from_texture(bg, WIDTH, HEIGHT));
 
         register_component(player, POSITION,
                         new_pos(position, DOWN));
@@ -104,17 +136,18 @@ int main(int argc, char *argv[]) {
 
                 game->update(game);
 
-                bg = SDL_CreateTextureFromSurface(
-                                game_singleton()->renderer,
-                                tilemap01->image
-                                );
                 SDL_RenderCopy(
                                 game_singleton()->renderer,
-                                bg, NULL, NULL
+                                bg, NULL, &(SDL_Rect){
+                                        .x = 0,
+                                        .y = 0,
+                                        .w = 1280,
+                                        .h = 1280
+                                }
                               );
 
                 if (game->render(game) != 0) {
-                        fprintf(stderr, "Render failure!!\n");
+                        fprintf(stderr, "[ERROR] Render failure!!\n");
                         break;
                 }
 
