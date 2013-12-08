@@ -4,17 +4,32 @@
 #include <string.h>
 #include "entity.h"
 
-world_p get_world() {
-	static world_p self;
+struct pool *pool()
+{
+	struct pool *self = malloc(sizeof(struct pool));
+	pool_start(self);
+
+	return self;
+}
+
+void pool_destroy(struct pool *self)
+{
+	free(self->entities);
+	free(self);
+	self = NULL;
+}
+
+struct pool *pool_get()
+{
+	static struct pool *self;
 
 	if (self == NULL) {
-		self = malloc(sizeof(struct world_s));
-		init_world(self);
+		self = pool();
 	}
 
 	if (self != NULL && self->init == false) {
-		if(init_world(self) != 0) {
-			fprintf(stderr, "\nCould Not Initialize world_p");
+		if(pool_start(self) != 0) {
+			fprintf(stderr, "\nCould Not Initialize World");
 			return NULL;
 		}
 	} else if (self != NULL && self->init == true) {
@@ -25,53 +40,78 @@ world_p get_world() {
 	return NULL;
 }
 
-int init_world(world_p self) {
-	self->entities = NULL;
-	self->last = NULL;
-	self->init = true;
-	self->get = &get_world;
+int pool_start(struct pool *self)
+{
+	*self = (struct pool){
+		.entities = NULL,
+		.init = true,
+	};
 
 	return 0;
 }
 
-entity_p new_entity(const char *name) {
-	world_p self = get_world();
-	entity_p new_entity = malloc(sizeof(struct entity_s));
-
-	new_entity->name = strdup(name);
-
-	new_entity->next = NULL;
-	for (int i = 0; i < NUM_COMPONENTS; i++) {
-		new_entity->components[i] = NULL;
-	}
-
-	if (self != NULL && new_entity != NULL) {
-		if (self->entities == NULL) {
-			self->entities = new_entity;
-		} else {
-			self->last->next = new_entity;
-		}
-
-		self->last = new_entity;
-	}
-
-	return new_entity;
+int pool_stop(struct pool *self)
+{
+	return self->init;
 }
 
-entity_p find_entity(const char *name, entity_p entity) {
-	if (strcmp(entity->name, name) == 0) {
-		return entity;
-	} else {
-		if (entity->next != NULL) 
-			return find_entity(name, entity->next);
+void pool_add_entity(struct pool **head, struct entity *entity)
+{
+	HASH_ADD_KEYPTR(hh, (*head)->entities,
+			entity->name,
+			strlen(entity->name),
+			entity);
+}
+
+struct entity *pool_get_entity(struct pool *head, const char *name)
+{
+	struct entity *self;
+	HASH_FIND_STR(head->entities, name, self);
+	if (self) {
+		return self;
 	}
 
 	return NULL;
 }
 
-int register_component(entity_p entity, enum COMPONENTS_LIST COMPONENT,
-		component_p component) {
-	entity->components[COMPONENT] = component;
+struct entity *entity(const char *name)
+{
+	struct entity *self = malloc(sizeof(struct entity));
+	*self = (struct entity){
+		.name = strdup(name),
+		.components = NULL
+	};
 
-	return 0;
+	return self;
+}
+
+void entity_add_component(
+		struct entity **self, struct component *component)
+{
+	HASH_ADD_KEYPTR(hh, (*self)->components,
+			component->name,
+			strlen(component->name),
+			component);
+}
+
+void *entity_get_component(struct entity **head, const char *name)
+{
+	struct component *self;
+	HASH_FIND_STR((*head)->components, name, self);
+	if (self) {
+		return self->delegate;
+	}
+
+	return NULL;
+}
+
+struct component *component(const char *name, void *delegate)
+{
+	struct component *self = malloc(sizeof(struct component));
+	*self = (struct component){
+		.name = strdup(name),
+		.delegate = delegate
+	};
+
+	return self;
 }

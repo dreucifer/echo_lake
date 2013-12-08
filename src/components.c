@@ -9,186 +9,195 @@
 #endif
 
 // Position Component Functions
-struct component *position(SDL_Rect world_pos, enum DIRECTION dir) {
-	struct component *self = (struct component *)malloc(sizeof(struct component));
-	struct position *self_pos = (struct position *)malloc(sizeof(struct position));
+struct component *position(SDL_Rect world_pos, enum DIRECTION dir)
+{
+	struct position *self = (struct position *)malloc(sizeof(struct position));
 	if (self == NULL) {
-		fprintf(stderr, "Could Not Create Component\n");
-		return NULL;
-	}
-	if (self_pos == NULL) {
 		fprintf(stderr, "Could Not Create Position\n");
 		return NULL;
 	}
 
-	*self_pos = (struct position){
+	*self= (struct position){
 		.world_pos = world_pos,
 			.dir = dir
 	};
 
-	*self = (struct component){
-		.delegate = self_pos
-	};
-
-	return self;
+	return component("position", self);
+}
+struct position *position_from_entity(struct entity **self)
+{
+	return (struct position *)entity_get_component(self, "position");
 }
 
-void position_destroy(struct component *self) {
-	free(self->delegate);
-	free(self);
+SDL_Rect *position_get_world(struct entity **self)
+{
+	return &position_from_entity(self)->world_pos;
 }
 
-SDL_Rect position_get_world(struct entity *self) {
-	struct position *self_pos = component_get("position", &self);
-	return (*self_pos).world_pos;
+Direction position_get_dir(struct entity **self)
+{
+	return position_from_entity(self)->dir;
 }
 
-SDL_Rect position_get_screen(struct entity *self) {
-	struct position *self_pos = self->components[POSITION]->delegate;
-	SDL_Rect screen_pos = self_pos->world_pos;
-
-	if (!(screen_pos.x < (WIDTH / 2) - 40)) {
-		screen_pos.x = (WIDTH / 2) - 40;
-	}
-	if (!(screen_pos.y < (HEIGHT / 2) - 40)) {
-		screen_pos.y = (HEIGHT / 2) - 40;
-	}
-	return screen_pos;
-}
-enum DIRECTION get_dir(struct entity *self) {
-	struct position *self_pos = self->components[POSITION]->delegate;
-	return self_pos->dir;
+void position_set_world(struct entity **self, SDL_Rect pos)
+{
+	position_from_entity(self)->world_pos = pos;
 }
 
-void set_world_pos(struct entity *self, SDL_Rect pos) {
-	struct position *self_pos = self->components[POSITION]->delegate;
-	self_pos->world_pos = pos;
+void position_set_dir(struct entity **self, Direction dir)
+{
+	position_from_entity(self)->dir = dir;
 }
 
-void set_dir(struct entity *self, enum DIRECTION dir) {
-	struct position *self_pos = self->components[POSITION]->delegate;
-	self_pos->dir = dir;
+void position_destroy(struct component **self)
+{
+	free((struct position *)(*self)->delegate);
+	free(*self);
+	*self = NULL;
 }
 // End Position Functions
 
 // Motion Component Functions
-struct component *new_motion() {
-	struct component *self = malloc(sizeof(struct component));
-	struct motion_s *self_mot = malloc(sizeof(struct motion_s));
+struct component *motion()
+{
+	struct motion *self = malloc(sizeof(struct motion));
 	if (self == NULL) {
-		fprintf(stderr, "Could Not Create Component\n");
-		return NULL;
-	}
-
-	if (self_mot == NULL) {
 		fprintf(stderr, "Could Not Create Motion\n");
 		return NULL;
 	}
 
-	self_mot->delta_t = 0;
-	self_mot->delta_c = 0;
-	self_mot->vel = 0;
+	*self = (struct motion){
+		.delta_t = 0,
+			.delta_c = 0,
+			.vel = 0
+	};
 
-	self->delegate = self_mot;
-	self->del = del_motion;
-
-	return self;
+	return component("motion", self);
 }
 
-void set_motion(struct entity *self, int vel) {
-	struct motion_s *self_mot = self->components[MOTION]->delegate;
+struct motion *motion_from_entity(struct entity **self)
+{
+	return (struct motion *)entity_get_component(self, "motion");
+}
 
-	if (get_vel(self) == 0) {
+void motion_clear(struct entity **self)
+{
+	*motion_from_entity(self) = (struct motion){
+		.delta_t = 0,
+			.delta_c = 0,
+			.vel = 0
+	};
+}
+
+void motion_set(struct entity **self, int vel)
+{
+	struct motion *self_mot = motion_from_entity(self);
+
+	if (motion_get_vel(self) == 0) {
 		self_mot->delta_t = STEP_DX;
 		self_mot->vel = vel;
 	}
 }
 
-int get_vel(struct entity *self) {
-	struct motion_s *self_mot = self->components[MOTION]->delegate;
-	return self_mot->vel;
+int motion_get_vel(struct entity **self)
+{
+	return motion_from_entity(self)->vel;
 }
 
-void clear_motion (struct entity *self) {
-	struct motion_s *self_mot = self->components[MOTION]->delegate;
-	self_mot->delta_t = 0;
-	self_mot->delta_c = 0;
-	self_mot->vel = 0;
+int motion_get_delta_t(struct entity **self)
+{
+	return motion_from_entity(self)->delta_t;
 }
 
-void del_motion(struct component *component) {
-	free(component->delegate);
-	free(component);
+int motion_get_delta_c(struct entity **self)
+{
+	return motion_from_entity(self)->delta_c;
 }
 
-struct component *new_texture(const char *image_path, int w, int h) {
-	struct component *self = malloc(sizeof(struct component_s));
-	texture_p self_tex = malloc(sizeof(struct texture_s));
-	SDL_Texture *new_tex;
-	SDL_Surface *loaded_surface = IMG_Load(image_path);
+void motion_destroy(struct component **component)
+{
+	free((*component)->delegate);
+	free(*component);
+	*component = NULL;
+}
+// End of Motion Component
 
-	if (loaded_surface == NULL) {
+
+// Texture Component
+struct component *texture(const char *image_path, int w, int h)
+{
+	struct texture *self = malloc(sizeof(struct texture));
+	SDL_Texture *image;
+	SDL_Surface *temp = IMG_Load(image_path);
+
+	if (temp == NULL) {
 		fprintf(stderr, "Unable to load image: %s! SDL_Image error: %s\n",
 				image_path, IMG_GetError());
 		return NULL;
 	} else {
-		new_tex = SDL_CreateTextureFromSurface(game_singleton()->renderer,
-				loaded_surface);
+		image = SDL_CreateTextureFromSurface(
+				game_get()->renderer,
+				temp);
 	}
 
-	self_tex->texture = new_tex;
-	self_tex->section = (SDL_Rect){
-		.x = 0,
-			.y = 0,
-			.w = w,
-			.h = h
+	*self = (struct texture){
+		.image = image,
+			.section = (SDL_Rect){
+				.x = 0,
+				.y = 0,
+				.w = w,
+				.h = h
+			}
 	};
 
-	self->delegate = self_tex;
-	self->del = del_texture;
+	SDL_FreeSurface(temp);
 
-	SDL_FreeSurface(loaded_surface);
-
-	return self;
+	return component("texture", self);
 }
 
-struct component *from_texture(SDL_Texture *new_tex, int w, int h)
+struct component *texture_from_texture(
+		SDL_Texture *image, int w, int h)
 {
-	struct component *self = malloc(sizeof(struct component_s));
-	texture_p self_tex = malloc(sizeof(struct texture_s));
+	struct texture *self = malloc(sizeof(struct texture));
 
-	self_tex->texture = new_tex;
-	self_tex->section = (SDL_Rect){
-		.x = 0,
-			.y = 0,
-			.w = w,
-			.h = h
+	*self = (struct texture){
+		.image = image,
+		.section = (SDL_Rect){
+			.x = 0,
+				.y = 0,
+				.w = w,
+				.h = h
+		}
 	};
 
-	self->delegate = self_tex;
-	self->del = del_texture;
-
-	return self;
+	return component("texture", self);
 }
 
-SDL_Texture* get_texture(struct entity *self) {
-	texture_p self_tex = self->components[TEXTURE]->delegate;
-	return self_tex->texture;
+struct texture *texture_from_entity(struct entity **self)
+{
+	return (struct texture *)entity_get_component(self, "texture");
 }
 
-SDL_Rect* get_section(struct entity *self) {
-	texture_p self_tex = self->components[TEXTURE]->delegate;
-	return &(self_tex->section);
+SDL_Texture* texture_get_image(struct entity **self)
+{
+	return texture_from_entity(self)->image;
 }
 
-void set_section(struct entity *self, SDL_Rect *section) {
-	texture_p self_tex = self->components[TEXTURE]->delegate;
-	self_tex->section = *section;
+SDL_Rect texture_get_section(struct entity **self)
+{
+	return texture_from_entity(self)->section;
 }
 
-void del_texture(struct component *component) {
-	texture_p self = component->delegate;
-	SDL_DestroyTexture(self->texture);
+void texture_set_section(struct entity **self, SDL_Rect *section)
+{
+	texture_from_entity(self)->section = *section;
+}
+
+void texture_destroy(struct component **component)
+{
+	struct texture *self = (*component)->delegate;
+	SDL_DestroyTexture(self->image);
 	free(self);
 	free(component);
+	component = NULL;
 }

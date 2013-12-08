@@ -27,19 +27,17 @@ typedef enum DIRECTION {
 
 struct position {
 	SDL_Rect world_pos;
-	enum DIRECTION dir;
+	Direction dir;
 };
 
 // Position Functions
 struct component	*position(SDL_Rect world_pos, Direction dir);
-int			position_init(struct entity *self);
-SDL_Rect 		position_get_world(struct entity *self);
-SDL_Rect		position_get_screen(struct entity *self);
-enum DIRECTION		position_get_dir(struct entity *self);
-void			position_set_world(struct entity *self, SDL_Rect pos);
-void			position_set_screen(struct entity *self, SDL_Rect pos);
-void			position_set_dir(struct entity *self, enum DIRECTION dir);
-void			position_destrou(struct component *self);
+struct position 	*position_from_entity(struct entity **self);
+SDL_Rect 		*position_get_world(struct entity **self);
+Direction		position_get_dir(struct entity **self);
+void			position_set_world(struct entity **self, SDL_Rect pos);
+void			position_set_dir(struct entity **self, Direction dir);
+void			position_destroy(struct component **self);
 
 /**** Motion Component **** 
  * This is the component that holds motion information. We really just
@@ -55,12 +53,13 @@ struct motion {
 
 // Motion Functions
 struct component	*motion();
-void			motion_set(struct entity *self, int vel);
-int			motion_get_vel(struct entity *self);
-int			motion_get_delta_t(struct entity *self);
-int			motion_get_delta_c(struct entity *self);
-void			motion_clear(struct entity *self);
-void			motion_destroy(struct component *component);
+struct motion 		*motion_from_entity(struct entity **self);
+void			motion_clear(struct entity **self);
+void			motion_set(struct entity **self, int vel);
+int			motion_get_vel(struct entity **self);
+int			motion_get_delta_t(struct entity **self);
+int			motion_get_delta_c(struct entity **self);
+void			motion_destroy(struct component **component);
 
 /**** Texture Component **** 
  * */
@@ -73,11 +72,13 @@ struct texture {
 
 /* Texture Component Functions */
 struct component 	*texture(const char *texturepath, int w, int h);
-struct component 	*from_texture(SDL_Texture *new_tex, int w, int h);
-SDL_Texture*		texture_get_image(struct entity *self);
-SDL_Rect* 		texture_get_section(struct entity *self);
+struct component 	*texture_from_texture(
+		SDL_Texture *new_tex, int w, int h);
+struct texture 		*texture_from_entity(struct entity **self);
+SDL_Texture*		texture_get_image(struct entity **self);
+SDL_Rect  		texture_get_section(struct entity **self);
 void 			texture_set_section(
-				struct entity *self, SDL_Rect *section);
-void 			texture_destroy(struct component *component);
+				struct entity **self, SDL_Rect *section);
+void 			texture_destroy(struct component **component);
 
 #endif

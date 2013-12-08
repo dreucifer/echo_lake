@@ -10,12 +10,107 @@
 
 const int SKIP_TICKS = 1000 / FPS;
 
+bool should_exit(SDL_Event *event) {
+	while(SDL_PollEvent(event)) {
+		switch(event->type){
+			case SDL_QUIT:
+				return true;
+				break;
+			default:
+				return false;
+				break;
+		}
+	}
+	return false;
+}
+
+bool input(struct entity *entity) {
+	static int hold_time;
+	const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+
+	if (keystate[SDL_SCANCODE_ESCAPE]) {
+		printf("[INFO] Escaped pressed, shutting down.\n");
+		return true;
+	}
+
+	if (motion_from_entity(&entity) != NULL) {
+		if (keystate[SDL_SCANCODE_UP] ||
+				keystate[SDL_SCANCODE_DOWN] ||
+				keystate[SDL_SCANCODE_LEFT] ||
+				keystate[SDL_SCANCODE_RIGHT]) {
+			hold_time++;
+		} else {
+			hold_time = 0;
+		}
+		if (keystate[SDL_SCANCODE_UP] && !keystate[SDL_SCANCODE_DOWN] &&
+				hold_time > 3) {
+			motion_set(&entity, 4);
+			position_set_dir(&entity, UP);
+		} 
+		if (keystate[SDL_SCANCODE_DOWN] && !keystate[SDL_SCANCODE_UP] &&
+				hold_time > 3) {
+			motion_set(&entity, 4);
+			position_set_dir(&entity, DOWN);
+		}
+		if (keystate[SDL_SCANCODE_LEFT] && !keystate[SDL_SCANCODE_RIGHT] &&
+				hold_time > 3) {
+			motion_set(&entity, 4);
+			position_set_dir(&entity, LEFT);
+		}
+		if (keystate[SDL_SCANCODE_RIGHT] && !keystate[SDL_SCANCODE_LEFT] &&
+				hold_time > 3) {
+			motion_set(&entity, 4);
+			position_set_dir(&entity, RIGHT);
+		}
+	}
+
+	return false;
+}
+
+void scroll_background(struct entity *background, struct entity *player) {
+	struct texture *bg_tex = texture_from_entity(&player);
+	SDL_Rect *player_pos = position_get_world(&player);
+	SDL_Rect bg_pos = bg_tex->section;
+	bg_pos.x = (player_pos->x > (WIDTH / 2) - 40) ?
+		player_pos->x + 40 - (WIDTH / 2) : 0;
+	bg_pos.y = (player_pos->y > (HEIGHT / 2) - 40) ?
+		player_pos->y + 40 - (HEIGHT / 2) : 0;
+	bg_pos.w = WIDTH;
+	bg_pos.h = HEIGHT;
+	texture_set_section(&background, &bg_pos);
+}
+
+struct entity *get_background() {
+	return pool_get_entity(pool_get(), "background");
+}
+
+struct entity *get_player() {
+	return pool_get_entity(pool_get(), "player");
+}
+
+int update() {
+	walk_entities(pool_get()->entities);
+	scroll_background(get_background(), get_player());
+
+	return 0;
+}
+
+int render() {
+	struct game *self = game_get();
+	render_entities(pool_get()->entities);
+	SDL_RenderPresent(self->renderer);
+
+	return 0;
+}
+
+
 int main()
 {
 	struct game *game;
 	struct entity *background, *player;
+	struct pool *pool;
 	SDL_Event event;
-	SDL_Rect position;
+	SDL_Rect pos;
 	Uint32 next_tick;
 	int sleep;
 
@@ -25,111 +120,66 @@ int main()
 	} else {
 		game = game_get();
 	}
+	game_get()->update = update;
+	game_get()->render = render;
 
 	atexit(SDL_Quit);
 
-	world_get();
+	pool = pool_get();
 
-	background = entity("background");
-	player = entity("player");
+	pos.x = (WIDTH - 80) / 2;
+	pos.y = (HEIGHT - 80) / 2;
+	pos.w = 80;
+	pos.h = 80;
 
-	position.x = (WIDTH - 80) / 2;
-	position.y = (HEIGHT - 80) / 2;
-	position.w = 80;
-	position.h = 80;
-
-	struct tileset *tileset01 = tileset(1, "bg", 80, 80,
-			IMG_Load("img/tiles/mansionset.png"));
-
-	struct layer *layer01 = layer("bg", 1.0, true);
-	struct layer *layer02 = layer("fg", 1.0, true);
-
-	int data1[] = {
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
-		3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
-	};
-	int data2[] = {
-		12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,
-		1,2,1,2,1,2,1,9,2,1,2,1,2,1,2,
-		10,11,10,11,10,11,10,12,11,10,11,10,11,10,11,
-		13,14,13,14,13,14,13,15,14,13,14,13,14,13,14,
-		1,2,1,2,1,2,1,9,2,1,2,1,2,1,2,
-		10,11,10,11,10,11,10,12,11,10,11,10,11,10,11,
-		13,14,13,14,13,14,13,15,14,13,14,13,14,13,14,
-		4,5,4,5,4,5,4,9,5,4,5,4,5,4,5,
-		7,8,7,8,7,8,7,0,8,7,8,7,8,7,8,
-		10,11,10,11,10,11,7,0,8,10,11,10,11,10,11,
-		13,14,13,14,13,14,10,12,11,13,14,13,14,13,14,
-		0,0,0,0,0,16,17,17,17,18,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	};
-
-	int count = sizeof(data1) / sizeof(unsigned);
-	for (int i = 0; i < count; i++) {
-		layer_add_cells(&layer01, data1[i]);
+	SDL_Surface *temp;
+	temp = IMG_Load("/home/dreucifer/GameDev/echo_lake/data/img/tiles/mansionset.png");
+	if (!temp) {
+		fprintf(stderr, "[ERROR] cannot load image: %s\n",
+				IMG_GetError());
+		return 0;
 	}
-
-	for (int i = 0; i < count; i++) {
-		layer_add_cells(&layer02, data2[i]);
-	}
-
-	struct tilemap *tilemap02 = load_tmx_json("maps/level1.json");
-	add_layer(&(tilemap02->layers), layer01);
-	add_layer(&(tilemap02->layers), layer02);
-	add_tileset(&(tilemap02->tilesets), tileset01);
-
-	blit_map(tilemap02, "bg");
-	blit_map(tilemap02, "fg");
+	struct tilemap *tilemap01 = load_tmx_json("data/maps/level1.json");
+	blit_map(tilemap01, "ground");
+	blit_map(tilemap01, "buildings");
 
 	SDL_Texture *bg;
 	bg = SDL_CreateTextureFromSurface(
 			game_get()->renderer,
-			tilemap02->image
+			tilemap01->image
 			);
 
-	register_component(background, TEXTURE,
-			from_texture(bg, WIDTH, HEIGHT));
+	background = entity("background");
+	player = entity("player");
 
-	register_component(player, POSITION,
-			new_pos(position, DOWN));
+	pool_add_entity(&pool, background);
+	pool_add_entity(&pool, player);
 
-	register_component(player, TEXTURE,
-			new_texture("img/ranger.png",
-				80, 80));
+	entity_add_component(&background,
+			texture_from_texture(bg, WIDTH, HEIGHT));
 
-	register_component(player, MOTION,
-			new_motion());
+	entity_add_component(&player, position(pos, DOWN));
 
-	position.x = 100;
-	position.y = 100;
+	entity_add_component(&player, texture(
+				"data/img/ranger.png", 80, 80));
+
+	entity_add_component(&player, motion());
+
+	pos.x = 100;
+	pos.y = 100;
 
 	sleep = 0;
 	next_tick = SDL_GetTicks();
 
 	while(!should_exit(&event)) {
-		if (handle_input(player)) {
+		if (input(player)) {
 			break;
 		}
 
 		game->update(game);
 
 		SDL_RenderCopy(
-				game_singleton()->renderer,
+				game_get()->renderer,
 				bg, NULL, &(SDL_Rect){
 				.x = 0,
 				.y = 0,
@@ -150,7 +200,7 @@ int main()
 		}
 	}
 
-	game_destructor(game);
+	game_destroy(game);
 	SDL_Quit();
 
 	return 0;

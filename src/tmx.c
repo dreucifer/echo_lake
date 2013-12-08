@@ -188,12 +188,12 @@ void blit_tile(struct tilemap *self,
 			&dest);
 }
 
-struct layer *find_layer(struct layer **head, const char* layer_name)
+struct layer *find_layer(struct layer **head, const char *name)
 {
 	struct layer *self = NULL;
-	HASH_FIND_STR(*head, layer_name, self);
+	HASH_FIND_STR(*head, name, self);
 	if (!self) {
-		fprintf(stderr, "[ERROR] Couldn't find layer: %s\n", layer_name);
+		fprintf(stderr, "[ERROR] Couldn't find layer: %s\n", name);
 	} else {
 		fprintf(stderr, "[INFO] Found layer %s\n", self->name);
 	}
@@ -201,7 +201,7 @@ struct layer *find_layer(struct layer **head, const char* layer_name)
 	return self;
 }
 
-void blit_map(struct tilemap *self, const char* layer_name)
+void blit_map(struct tilemap *self, const char *layer_name)
 {
 	SDL_Rect dest;
 	dest.x = 0;
@@ -211,7 +211,7 @@ void blit_map(struct tilemap *self, const char* layer_name)
 
 	struct layer *cur_layer = NULL;
 	cur_layer = find_layer(&(self->layers), layer_name);
-	if (!cur_layer->cells) {
+	if (!cur_layer) {
 		fprintf(stderr, "[ERROR] layer %s is empty\n", cur_layer->name);
 		return;
 	}
@@ -278,9 +278,41 @@ struct tilemap *load_tmx_json(const char *filename)
 	size_t index;
 	json_t *value;
 	json_array_foreach(tilesets, index, value) {
-		int firstgid = (int)json_integer_value(json_object_get(value, "firstgid"));
-		const char *name = json_string_value(json_object_get(value, "name"));
-		fprintf(stderr, "[INFO] found tileset: %s, firstgid: %d\n", name, firstgid);
+		json_t *firstgid, *imagefile, *name;
+		firstgid = json_object_get(value, "firstgid");
+		imagefile = json_object_get(value, "image");
+		name = json_object_get(value, "name");
+		tilewidth = json_object_get(value, "tilewidth");
+		tileheight = json_object_get(value, "tileheight");
+		struct tileset *temp_tileset;
+		SDL_Surface *temp_image = IMG_Load(json_string_value(imagefile));
+		temp_tileset = tileset(
+				json_integer_value(firstgid),
+				json_string_value(name),
+				json_integer_value(tilewidth),
+				json_integer_value(tileheight),
+				temp_image);
+		add_tileset(&(self->tilesets), temp_tileset);
+	}
+	
+	json_t *layers;
+	layers = json_object_get(root, "layers");
+	value = NULL;
+	index = 0;
+	json_array_foreach(layers, index, value) {
+		json_t *name, *opacity, *visible, *data;
+		struct layer *temp_layer;
+		name = json_object_get(value, "name");
+		opacity = json_object_get(value, "opacity");
+		visible = json_object_get(value, "visible");
+		data = json_object_get(value, "data");
+		temp_layer = layer(json_string_value(name), json_real_value(opacity), json_integer_value(visible));
+		size_t tile_index;
+		json_t *tile_gid;
+		json_array_foreach(data, tile_index, tile_gid) {
+			layer_add_cells(&temp_layer, json_integer_value(tile_gid));
+		}
+		add_layer(&(self->layers), temp_layer);
 	}
 
 	return self;
