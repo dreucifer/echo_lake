@@ -1,41 +1,43 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "macros.h"
 #include <stdbool.h>
+#include "uthash.h"
+#include "macros.h"
 
-struct world {
+struct pool {
 	struct entity *entities;
-	struct component *components;
 	bool init;
 };
-// get singleton of world
-struct world 	*world();
-struct world 	*world_get();
-int 		world_start(struct world *self);
-int 		world_stop(struct world *self);
-void 		world_destroy(struct world *self);
-void 		world_add_entity(
-		struct world **self, struct entity *entity);
+// get singleton of pool
+struct pool 	*pool();
+void 		pool_destroy(struct pool *self);
+struct pool 	*pool_get();
+int 		pool_start(struct pool *self);
+int 		pool_stop(struct pool *self);
+void 		pool_add_entity(
+		struct pool **self, struct entity *entity);
+struct entity 	*pool_get_entity(struct pool *self, const char *name);
 
 
 struct entity {
 	const char *name;
 	struct component *components;
-	struct entity *next;
+	UT_hash_handle hh;
 };
 struct entity 	*entity(const char *name);
-struct entity 	*entity_get_component(
-		struct entity **self, const char *name);
 void 		entity_add_component(
 		struct entity **self, struct component *component);
+void 		*entity_get_component(
+		struct entity **self, const char *name);
 
 
 struct component {
-	struct entity *entities;
+	const char *name;
 	void *delegate;
+	UT_hash_handle hh;
 };
-void component(struct component *self);
+struct component *component(const char *name, void *delegate);
 
 
 #endif

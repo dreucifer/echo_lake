@@ -3,46 +3,49 @@
 #include "systems.h"
 #include "components.h"
 
-int render_entities(entity_p entity) {
-	component_p position = entity->components[POSITION];
-	component_p texture = entity->components[TEXTURE];
-	SDL_Rect *screen_pos = malloc(sizeof(SDL_Rect));
+int render_entities(struct entity *entity)
+{
+	struct position *position = position_from_entity(&entity);
+	struct texture *texture = texture_from_entity(&entity);
 
 	if (texture != NULL && position != NULL) {
-		*screen_pos = get_screen_pos(entity);
-		if (screen_pos != NULL) {
-			SDL_RenderCopy(
-					game_singleton()->renderer,
-					get_texture(entity),
-					get_section(entity),
-					screen_pos);
-		}
+		SDL_Texture *image = texture->image;
+		SDL_Rect *source = &(texture->section);
+		SDL_RenderCopy(
+				game_get()->renderer,
+				image,
+				source,
+				&(SDL_Rect){
+					.x = 200,
+					.y = 200,
+					.w = 80,
+					.h = 80
+				});
 
 	} else if (texture != NULL && position == NULL) {
+		SDL_Rect source = texture_get_section(&entity);
 		SDL_RenderCopy(
-				game_singleton()->renderer,
-				get_texture(entity),
-				get_section(entity),
+				game_get()->renderer,
+				texture_get_image(&entity),
+				&source,
 				NULL);
 	}
 
-	free(screen_pos);
-	return (entity->next != NULL) ? render_entities(entity->next) : 0;
+	return (entity->hh.next != NULL) ? render_entities(entity->hh.next) : 0;
 }
 
-int walk_entities(entity_p entity) {
-	position_p self_pos;
-	motion_p self_mot;
+int walk_entities(struct entity *entity)
+{
+	struct position *self_pos;
+	struct motion *self_mot;
 
-	if (entity->components[POSITION] != NULL &&
-			entity->components[MOTION] != NULL)  {
+	if (entity_get_component(&entity, "position") != NULL &&
+	    entity_get_component(&entity, "motion") != NULL)  {
 
-		self_pos =
-			entity->components[POSITION]->delegate;
-		self_mot =
-			entity->components[MOTION]->delegate;
+		self_pos = position_from_entity(&entity);
+		self_mot = motion_from_entity(&entity);
 
-		switch (get_dir(entity)) {
+		switch (position_get_dir(&entity)) {
 			default:
 				break;
 			case UP:
@@ -67,11 +70,11 @@ int walk_entities(entity_p entity) {
 			self_pos->world_pos.y = 0;
 		}
 
-		clear_motion(entity);
+		motion_clear(&entity);
 	}
 
-	if (entity->next != NULL) {
-		return walk_entities(entity->next);
+	if (entity->hh.next != NULL) {
+		return walk_entities(entity->hh.next);
 	}
 
 	return 0;

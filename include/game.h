@@ -1,8 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
-#define WIDTH 512
-#define HEIGHT 448
+#define WIDTH 640
+#define HEIGHT 480
 #define BPP 0
 #define DEPTH 32
 #define FPS 30
@@ -16,16 +16,14 @@
 
 extern const int SKIP_TICKS;
 
+typedef struct state state_t;
 struct game {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
+	struct world *world;
 	char *title;
 	bool init;
 
-	struct state;
-};
-
-struct state {
 	int (*preload)(struct game *self);
 	int (*create)(struct game *self);
 	int (*update)(struct game *self);
@@ -36,6 +34,6 @@ struct state {
 struct game *game(const char *title);
 struct game *game_get();
 int game_init(struct game *self);
-void game_destroy(struct game *self);
+void game_destroy();
 
 #endif

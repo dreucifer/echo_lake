@@ -4,8 +4,9 @@
 
 const int STEP_DX = 40;
 
-void set_sprite(void * self_void) {
-	player_p self = self_void;
+void set_sprite(void * self_void)
+{
+	struct player *self = self_void;
 
 	switch(self->frame) {
 		case RIGHT_FOOT:
@@ -46,7 +47,8 @@ void set_sprite(void * self_void) {
 }
 
 
-int player_update(player_p self, int dt, _Bool *key) {
+int player_update(struct player *self, int dt, _Bool *key)
+{
 
 
 	/* Increment holdtime and set orientation based on button */
@@ -54,7 +56,7 @@ int player_update(player_p self, int dt, _Bool *key) {
 		if (self->action != WALK) {
 			if (self->orient != CHAR_UP) {
 				self->orient = CHAR_UP;
-				self->set_sprite(self);
+				set_sprite(self);
 			}
 
 			self->hold_time += dt;
@@ -64,7 +66,7 @@ int player_update(player_p self, int dt, _Bool *key) {
 		if (self->action != WALK) {
 			if (self->orient != CHAR_DOWN) {
 				self->orient = CHAR_DOWN;
-				self->set_sprite(self);
+				set_sprite(self);
 			}
 
 			self->hold_time += dt;
@@ -74,7 +76,7 @@ int player_update(player_p self, int dt, _Bool *key) {
 		if (self->action != WALK) {
 			if (self->orient != CHAR_LEFT) {
 				self->orient = CHAR_LEFT;
-				self->set_sprite(self);
+				set_sprite(self);
 			}
 
 			self->hold_time += dt;
@@ -84,7 +86,7 @@ int player_update(player_p self, int dt, _Bool *key) {
 		if (self->action != WALK) {
 			if (self->orient != CHAR_RIGHT) {
 				self->orient = CHAR_RIGHT;
-				self->set_sprite(self);
+				set_sprite(self);
 			}
 
 			self->hold_time += dt;
@@ -149,13 +151,14 @@ int player_update(player_p self, int dt, _Bool *key) {
 	}
 
 	self->frame_time += dt;
-	self->set_sprite(self);
+	set_sprite(self);
 
 	return 0;
 }
 
 
-void player_render(player_p self, SDL_Renderer *renderer) {
+void player_render(struct player *self, SDL_Renderer *renderer)
+{
 	SDL_Rect temp;
 	temp.x = self->x;
 	temp.y = self->y;
@@ -166,15 +169,21 @@ void player_render(player_p self, SDL_Renderer *renderer) {
 }
 
 
-player_p player_constructor(char *filename, int loc_x, int loc_y,
-		ORIENTATION orientation, SDL_Renderer *renderer) {
+
+struct player *player(
+		const char *imagefile,
+		const int loc_x,
+		const int loc_y,
+		Orientation orientation,
+		SDL_Renderer *renderer)
+{
 	/* This function is a factory for the player pseudoclass *
 	 * it creates a permanent instance of a player struct,   *
 	 * initializes the values, and initializes the function  *
 	 * pointers.                                             */
 
 
-	player_p self = malloc(sizeof(struct player_s));
+	struct player *self = malloc(sizeof(struct player));
 	SDL_Surface *temp;
 
 	self->orient      = orientation;
@@ -185,9 +194,6 @@ player_p player_constructor(char *filename, int loc_x, int loc_y,
 	self->frame_time  = 0;
 	self->hold_time   = 0;
 	self->dx          = 0;
-	self->set_sprite  = set_sprite;
-	self->update      = player_update;
-	self->render      = player_render;
 	self->clipping    = (SDL_Rect){ .w = 80, .h = 80 };
 
 	self->x = loc_x;
@@ -195,18 +201,17 @@ player_p player_constructor(char *filename, int loc_x, int loc_y,
 
 	/* Initalize the spritemap (image) from file, then creat  *
 	 * an empty render surface, which is filled by set_sprite */
-	temp = IMG_Load(filename);
+	temp = IMG_Load(imagefile);
 	self->image = SDL_CreateTextureFromSurface(renderer, temp);
 	SDL_FreeSurface(temp);
-	self->set_sprite(self);
+	set_sprite(self);
 
 	return self;
 }
 
 
-void player_destructor(player_p self) {
-
-
+void player_destroy(struct player *self) {
 	SDL_DestroyTexture(self->image);
 	free(self);
+	self = NULL;
 }
