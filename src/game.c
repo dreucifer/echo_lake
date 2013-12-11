@@ -75,6 +75,12 @@ int game_init(struct game *self) {
 		return -1;
 	}
 
+	self->world = world_get();
+	if(!self->world) {
+		fprintf(stderr, "[ERROR] Could not initialize world");
+		return -1;
+	}
+
 	SDL_SetWindowTitle(self->window, self->title);
 
 	return 0;

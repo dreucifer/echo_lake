@@ -9,7 +9,11 @@
 #endif
 
 // Position Component Functions
-struct component *position(SDL_Rect world_pos, enum DIRECTION dir)
+struct component 	*position(
+			SDL_Point pos,
+			SDL_Point size,
+			SDL_Point offset,
+			Direction dir)
 {
 	struct position *self = (struct position *)malloc(sizeof(struct position));
 	if (self == NULL) {
@@ -18,8 +22,10 @@ struct component *position(SDL_Rect world_pos, enum DIRECTION dir)
 	}
 
 	*self= (struct position){
-		.world_pos = world_pos,
-			.dir = dir
+		.pos = pos,
+		.size = size,
+		.offset = offset,
+		.dir = dir
 	};
 
 	return component("position", self);
@@ -29,9 +35,9 @@ struct position *position_from_entity(struct entity **self)
 	return (struct position *)entity_get_component(self, "position");
 }
 
-SDL_Rect *position_get_world(struct entity **self)
+SDL_Point *position_get_world(struct entity **self)
 {
-	return &position_from_entity(self)->world_pos;
+	return &position_from_entity(self)->pos;
 }
 
 Direction position_get_dir(struct entity **self)
@@ -39,9 +45,9 @@ Direction position_get_dir(struct entity **self)
 	return position_from_entity(self)->dir;
 }
 
-void position_set_world(struct entity **self, SDL_Rect pos)
+void position_set_world(struct entity **self, SDL_Point pos)
 {
-	position_from_entity(self)->world_pos = pos;
+	position_from_entity(self)->pos = pos;
 }
 
 void position_set_dir(struct entity **self, Direction dir)

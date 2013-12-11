@@ -1,12 +1,12 @@
 #include <assert.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "player.h"
 #include "game.h"
 #include "entity.h"
 #include "components.h"
 #include "systems.h"
 #include "tmx.h"
+#include "world.h"
 
 const int SKIP_TICKS = 1000 / FPS;
 
@@ -67,38 +67,15 @@ bool input(struct entity *entity) {
 	return false;
 }
 
-void scroll_background(struct entity *background, struct entity *player) {
-	struct texture *bg_tex = texture_from_entity(&player);
-	SDL_Rect *player_pos = position_get_world(&player);
-	SDL_Rect bg_pos = bg_tex->section;
-	bg_pos.x = (player_pos->x > (WIDTH / 2) - 40) ?
-		player_pos->x + 40 - (WIDTH / 2) : 0;
-	bg_pos.y = (player_pos->y > (HEIGHT / 2) - 40) ?
-		player_pos->y + 40 - (HEIGHT / 2) : 0;
-	bg_pos.w = WIDTH;
-	bg_pos.h = HEIGHT;
-	texture_set_section(&background, &bg_pos);
-}
-
-struct entity *get_background() {
-	return pool_get_entity(pool_get(), "background");
-}
-
-struct entity *get_player() {
-	return pool_get_entity(pool_get(), "player");
-}
-
 int update() {
-	walk_entities(pool_get()->entities);
-	scroll_background(get_background(), get_player());
+	walk_entities(&world_get()->entities);
 
 	return 0;
 }
 
 int render() {
-	struct game *self = game_get();
-	render_entities(pool_get()->entities);
-	SDL_RenderPresent(self->renderer);
+	world_render(&world_get()->entities);
+	SDL_RenderPresent(game_get()->renderer);
 
 	return 0;
 }
@@ -107,12 +84,11 @@ int render() {
 int main()
 {
 	struct game *game;
-	struct entity *background, *player;
-	struct pool *pool;
+	struct entity *tilemap, *ranger;
 	SDL_Event event;
-	SDL_Rect pos;
 	Uint32 next_tick;
 	int sleep;
+	SDL_Point world_pos;
 
 	if (game_get() == NULL) {
 		fprintf(stderr, "[ERROR] Could not create game singleton\n");
@@ -120,17 +96,13 @@ int main()
 	} else {
 		game = game_get();
 	}
+
+	world_pos = (SDL_Point){ 1200, 1200 };
+	world_get()->bounds = world_pos;
 	game_get()->update = update;
 	game_get()->render = render;
 
 	atexit(SDL_Quit);
-
-	pool = pool_get();
-
-	pos.x = (WIDTH - 80) / 2;
-	pos.y = (HEIGHT - 80) / 2;
-	pos.w = 80;
-	pos.h = 80;
 
 	SDL_Surface *temp;
 	temp = IMG_Load("/home/dreucifer/GameDev/echo_lake/data/img/tiles/mansionset.png");
@@ -149,46 +121,30 @@ int main()
 			tilemap01->image
 			);
 
-	background = entity("background");
-	player = entity("player");
+	world_pos = (SDL_Point){ 600, 1000 };
 
-	pool_add_entity(&pool, background);
-	pool_add_entity(&pool, player);
+	ranger = player("ranger", "data/img/ranger.png", 80, 80,
+			world_pos, DOWN);
+	tilemap = entity("tilemap", NULL);
 
-	entity_add_component(&background,
+	world_add_entity(tilemap);
+	world_add_entity(ranger);
+
+	entity_add_component(&tilemap,
 			texture_from_texture(bg, WIDTH, HEIGHT));
-
-	entity_add_component(&player, position(pos, DOWN));
-
-	entity_add_component(&player, texture(
-				"data/img/ranger.png", 80, 80));
-
-	entity_add_component(&player, motion());
-
-	pos.x = 100;
-	pos.y = 100;
 
 	sleep = 0;
 	next_tick = SDL_GetTicks();
 
 	while(!should_exit(&event)) {
-		if (input(player)) {
+		if (input(ranger)) {
 			break;
 		}
 
-		game->update(game);
+		game->update();
+		camera_follow(&ranger);
 
-		SDL_RenderCopy(
-				game_get()->renderer,
-				bg, NULL, &(SDL_Rect){
-				.x = 0,
-				.y = 0,
-				.w = 1280,
-				.h = 1280
-				}
-			      );
-
-		if (game->render(game) != 0) {
+		if (game->render() != 0) {
 			fprintf(stderr, "[ERROR] Render failure!!\n");
 			break;
 		}

@@ -25,3 +25,5 @@ tags
 
 # vim swaps
 *.swp
+
+data/maps/data

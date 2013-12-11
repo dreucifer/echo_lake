@@ -13,10 +13,10 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 #include "entity.h"
+#include "world.h"
 
 extern const int SKIP_TICKS;
 
-typedef struct state state_t;
 struct game {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
@@ -24,11 +24,11 @@ struct game {
 	char *title;
 	bool init;
 
-	int (*preload)(struct game *self);
-	int (*create)(struct game *self);
-	int (*update)(struct game *self);
-	int (*render)(struct game *self);
-	int (*destroy)(struct game *self);
+	int (*preload)();
+	int (*create)();
+	int (*update)();
+	int (*render)();
+	int (*destroy)();
 };
 
 struct game *game(const char *title);

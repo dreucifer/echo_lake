@@ -1,4 +1,4 @@
-/******** Components Header ********
+/**** Components Header ****
  * Components are the data stores in a Entity-Component system.
  * They hold only a few data variables associated with some
  * discrete property of an entity. Also included are some simple
@@ -10,32 +10,56 @@
 #define COMPONENTS_H
 
 #include <SDL2/SDL.h>
+#include "uthash.h"
 #include "entity.h"
 
+/**** Component Definition **** 
+ * hh: Components are stored in a hash using uthash library.
+ * name: Unique description of the component, used as the hash key.
+ * delegate: This holds the address of the actual component structures
+ * 	below.
+ * 
+ * */
+struct component {
+	UT_hash_handle hh;
+	const char *name;
+	void *delegate;
+};
+struct component 	*component(const char *name, void *delegate);
+
+
+
 /**** Position Component **** 
- * This here component holds various positions for the entity.
- * World, or map, position is where the entity is located in the world.
- * Render position is where the entity is on the screen.
- * Orientation is which direction the entity is currently facing:
- *   UP, DOWN, LEFT, RIGHT
+ * This here component holds orientation data for the entity.
+ * position is defined as an SDL_Point containing the x, y
+ *	coordinates of the entity.
+ * size is the width and height of the entity.
+ * offset is the percentage offset of the position point,
+ * 	i.e 50, 50 would be the center.
+ * Orientation is the direction the entity is currently facing:
+ * 	UP, DOWN, LEFT, RIGHT
  * */
 
-// Position Enumerations and Structures
 typedef enum DIRECTION {
 	UP, DOWN, LEFT, RIGHT
 } Direction;
 
 struct position {
-	SDL_Rect world_pos;
+	SDL_Point pos;
+	SDL_Point size;
+	SDL_Point offset;
 	Direction dir;
 };
 
-// Position Functions
-struct component	*position(SDL_Rect world_pos, Direction dir);
+struct component 	*position(
+			SDL_Point pos,
+			SDL_Point size,
+			SDL_Point offset,
+			Direction dir);
 struct position 	*position_from_entity(struct entity **self);
-SDL_Rect 		*position_get_world(struct entity **self);
+SDL_Point 		*position_get_world(struct entity **self);
 Direction		position_get_dir(struct entity **self);
-void			position_set_world(struct entity **self, SDL_Rect pos);
+void			position_set_world(struct entity **self, SDL_Point pos);
 void			position_set_dir(struct entity **self, Direction dir);
 void			position_destroy(struct component **self);
 
@@ -46,12 +70,10 @@ void			position_destroy(struct component **self);
  * motion, only the total displacement, current displacement, and 
  * velocity are stored.
  * */
-// Motion Enums and Structures
 struct motion {
 	int delta_t, delta_c, vel;
 };
 
-// Motion Functions
 struct component	*motion();
 struct motion 		*motion_from_entity(struct entity **self);
 void			motion_clear(struct entity **self);
@@ -63,14 +85,12 @@ void			motion_destroy(struct component **component);
 
 /**** Texture Component **** 
  * */
-// Texture Enums and Structs
 struct texture {
 	SDL_Texture *image;
 	char *filename;
 	SDL_Rect section;
 };
 
-/* Texture Component Functions */
 struct component 	*texture(const char *texturepath, int w, int h);
 struct component 	*texture_from_texture(
 		SDL_Texture *new_tex, int w, int h);
