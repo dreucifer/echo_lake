@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "game.h"
+#include "statemanager.h"
 #include "entity.h"
 #include "components.h"
 #include "systems.h"
