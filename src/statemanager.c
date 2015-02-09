@@ -11,8 +11,10 @@ void push_state(struct state* new_state) {
 
 void pop_state() {
     struct statemanager *instance = statemanager();
-    instance->head->data->onexit();
-    instance->head = instance->head->next;
+    if (instance->head != NULL ) {
+        instance->head->data->onexit();
+        instance->head = instance->head->next;
+    }
 }
 
 void change_state(struct state* new_state) {
@@ -20,13 +22,16 @@ void change_state(struct state* new_state) {
     push_state(new_state);
 }
 
-struct statemanager* statemanager() {
-    static struct statemanager *s_statemanager = NULL;
+struct statemanager *statemanager() {
+    static struct statemanager *self = NULL;
 
-    if(s_statemanager == NULL) {
-        s_statemanager = calloc(0, sizeof(*s_statemanager));
-        s_statemanager->head = NULL;
+    if (self == NULL) {
+        self = malloc(sizeof(struct statemanager));
+        self->head = NULL;
+        self->change_state = &change_state;
+        self->push_state = &push_state;
+        self->pop_state = &pop_state;
     }
 
-    return s_statemanager;
+    return self;
 }

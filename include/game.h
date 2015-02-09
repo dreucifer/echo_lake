@@ -18,17 +18,17 @@
 extern const int SKIP_TICKS;
 
 struct game {
-	SDL_Window *window;
-	SDL_Renderer *renderer;
-	struct world *world;
-	char *title;
-	bool init;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    struct world *world;
+    char *title;
+    bool init;
 
-	int (*preload)();
-	int (*create)();
-	int (*update)();
-	int (*render)();
-	int (*destroy)();
+    int (*preload)();
+    int (*create)();
+    int (*update)();
+    int (*render)();
+    int (*destroy)();
 };
 
 struct game *game(const char *title);

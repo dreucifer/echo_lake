@@ -4,7 +4,7 @@ CFLAGS=-Wall -Wextra -Werror -pedantic -g -std=c11 -fms-extensions -D_GNU_SOURCE
 
 APP=../echo_lake
 
-OBJECTS=echo_lake.o player.o game.o components.o entity.o systems.o tmx.o world.o
+OBJECTS=echo_lake.o player.o game.o components.o entity.o systems.o tmx.o world.o statemanager.o menustate.o entitymanager.o
 
 all: $(OBJECTS)
 	gcc -o $(APP) $(CFLAGS) $(OBJECTS)
@@ -31,6 +31,16 @@ tmx.o: tmx.c $(INCLUDE)tmx.h
 	gcc -c $(CFLAGS) tmx.c
 
 world.o: world.c
+	gcc -c $(CFLAGS) world.c
+
+statemanager.o: statemanager.c $(INCLUDE)statemanager.h
+	gcc -c $(CFLAGS) statemanager.c
+
+menustate.o: menustate.c $(INCLUDE)menustate.h
+	gcc -c $(CFLAGS) menustate.c
+
+entitymanager.o: entitymanager.c $(INCLUDE)entitymanager.h
+	gcc -c $(CFLAGS) entitymanager.c
 
 clean:
 	rm -rf *.o echo_lake

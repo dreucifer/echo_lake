@@ -6,43 +6,43 @@
 
 struct entity *entity(const char *name, void **data)
 {
-	struct entity *self = malloc(sizeof(struct entity));
-	*self = (struct entity){
-		.name = strdup(name),
-		.data = data,
-		.components = NULL
-	};
+    struct entity *self = malloc(sizeof(struct entity));
+    *self = (struct entity) {
+        .name = strdup(name),
+         .data = data,
+          .components = NULL
+    };
 
-	return self;
+    return self;
 }
 
 void entity_add_component(
-		struct entity **self, struct component *component)
+    struct entity **self, struct component *component)
 {
-	HASH_ADD_KEYPTR(hh, (*self)->components,
-			component->name,
-			strlen(component->name),
-			component);
+    HASH_ADD_KEYPTR(hh, (*self)->components,
+                    component->name,
+                    strlen(component->name),
+                    component);
 }
 
 void *entity_get_component(struct entity **self, const char *name)
 {
-	struct component *self_comp = NULL;
-	HASH_FIND_STR((*self)->components, name, self_comp);
-	if (self_comp) {
-		return self_comp->delegate;
-	}
+    struct component *self_comp = NULL;
+    HASH_FIND_STR((*self)->components, name, self_comp);
+    if (self_comp) {
+        return self_comp->delegate;
+    }
 
-	return NULL;
+    return NULL;
 }
 
 struct component *component(const char *name, void *delegate)
 {
-	struct component *self = malloc(sizeof(struct component));
-	*self = (struct component){
-		.name = strdup(name),
-		.delegate = delegate
-	};
+    struct component *self = malloc(sizeof(struct component));
+    *self = (struct component) {
+        .name = strdup(name),
+         .delegate = delegate
+    };
 
-	return self;
+    return self;
 }

@@ -4,8 +4,8 @@
 #include "entity.h"
 
 struct system {
-	char *name;
-	struct system *next;
+    char *name;
+    struct system *next;
 };
 
 int walk_entities(struct entity **cur_entity);

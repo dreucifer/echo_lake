@@ -15,9 +15,9 @@ struct statemanager {
     void (*change_state)(struct state *new_state);
 };
 
-void push_state();
+void push_state(struct state *new_state);
 void pop_state();
-void change_state();
-struct statemanager* statemanager();
+void change_state(struct state *new_state);
+struct statemanager *statemanager();
 
 #endif
