@@ -4,16 +4,10 @@
 #include <string.h>
 #include "entity.h"
 
-struct entity *entity(const char *name, void **data)
-{
-    struct entity *self = malloc(sizeof(struct entity));
-    *self = (struct entity) {
-        .name = strdup(name),
-         .data = data,
-          .components = NULL
-    };
-
-    return self;
+static void cleanup(struct entity *self) {
+    if (self->data != NULL) {
+        free(self->data);
+    }
 }
 
 void entity_add_component(
@@ -42,6 +36,19 @@ struct component *component(const char *name, void *delegate)
     *self = (struct component) {
         .name = strdup(name),
          .delegate = delegate
+    };
+
+    return self;
+}
+
+struct entity *entity(const char *name, void **data)
+{
+    struct entity *self = malloc(sizeof(struct entity));
+    *self = (struct entity) {
+        .name = strdup(name),
+         .data = data,
+          .components = NULL,
+           .cleanup = &cleanup
     };
 
     return self;

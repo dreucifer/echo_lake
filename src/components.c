@@ -142,7 +142,7 @@ struct component *texture(const char *image_path, int w, int h)
         return NULL;
     } else {
         image = SDL_CreateTextureFromSurface(
-                    game_get()->renderer,
+                    game()->renderer,
                     temp);
     }
 

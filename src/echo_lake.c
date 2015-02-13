@@ -2,11 +2,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "game.h"
-#include "statemanager.h"
 #include "state.h"
 #include "menustate.h"
 #include "entity.h"
-#include "entitymanager.h"
 #include "components.h"
 #include "systems.h"
 #include "tmx.h"
@@ -71,66 +69,35 @@ bool input(struct entity *entity) {
     return false;
 }
 
-int update() {
-    return 0;
-}
-
-int render() {
-    struct state *cur_state = statemanager()->head->data;
-    cur_state->render();
-    SDL_RenderPresent(game_get()->renderer);
-
-    return 0;
-}
-
-
 int main()
 {
-    struct game *game;
     struct entity *tilemap, *ranger;
     SDL_Event event;
     Uint32 next_tick;
     int sleep;
     SDL_Point world_pos;
 
-    game = game_get();
-    if (game == NULL) {
-        fprintf(stderr, "[ERROR] Could not create game singleton\n");
+    if (game() == NULL) {
+        fprintf(stderr, "[ERROR] Could not initialize Game\n");
         return -1;
     }
 
-    if (statemanager() == NULL) {
-        fprintf(stderr, "[ERROR] Could not instantiate state manager.");
-    }
-    statemanager()->push_state(menustate());
-    
-    if (entitymanager() == NULL) {
-      fprintf(stderr, "[ERROR] Could not instantiate entity manager.");
-    }
+    game()->statemanager->push_state(menustate());
 
     world_pos = (SDL_Point) {
         1200, 1200
     };
     world_get()->bounds = world_pos;
-    game_get()->update = update;
-    game_get()->render = render;
 
     atexit(SDL_Quit);
 
-    SDL_Surface *temp;
-    temp = IMG_Load("/home/dreucifer/GameDev/echo_lake/data/img/tiles/mansionset.png");
-    if (!temp) {
-        fprintf(stderr, "[ERROR] cannot load image: %s\n",
-                IMG_GetError());
-        return 0;
-    }
     struct tilemap *tilemap01 = load_tmx_json("data/maps/level1.json");
     blit_map(tilemap01, "ground");
     blit_map(tilemap01, "buildings");
 
     SDL_Texture *bg;
     bg = SDL_CreateTextureFromSurface(
-             game_get()->renderer,
+             game()->renderer,
              tilemap01->image
          );
 
@@ -142,8 +109,8 @@ int main()
                     world_pos, DOWN);
     tilemap = entity("tilemap", NULL);
 
-    entitymanager()->add_entity(tilemap);
-    entitymanager()->add_entity(ranger);
+    game()->entitymanager->add_entity(tilemap);
+    game()->entitymanager->add_entity(ranger);
 
     entity_add_component(&tilemap,
                          texture_from_texture(bg, WIDTH, HEIGHT));
@@ -156,10 +123,10 @@ int main()
             break;
         }
 
-        game->update();
+        game()->update();
         camera_follow(&ranger);
 
-        if (game->render() != 0) {
+        if (game()->render() != 0) {
             fprintf(stderr, "[ERROR] Render failure!!\n");
             break;
         }
@@ -171,7 +138,7 @@ int main()
         }
     }
 
-    game_destroy(game);
+    game()->cleanup();
     SDL_Quit();
 
     return 0;

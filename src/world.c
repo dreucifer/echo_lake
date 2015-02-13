@@ -44,7 +44,7 @@ int world_start(struct world *self)
 
         .bounds = { WIDTH, HEIGHT },
          .cam = { 0, 0 },
-           .init = true,
+          .init = true,
     };
 
     return 0;
@@ -56,5 +56,5 @@ int world_stop(struct world *self)
 }
 
 int world_render() {
-  return 0;
+    return 0;
 }

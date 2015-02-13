@@ -10,6 +10,7 @@ struct entity {
     struct component *components;
     void *data;
     UT_hash_handle hh;
+    void (*cleanup)(struct entity *self);
 };
 
 struct entity 	*entity(const char *name, void **data);

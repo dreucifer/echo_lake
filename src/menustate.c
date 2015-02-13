@@ -10,7 +10,7 @@ void menu_update() {
 }
 
 void menu_render() {
-  render_entities(&entitymanager()->entity_list);
+    render_entities(&entitymanager()->entity_list);
 }
 
 bool menu_onenter() {

@@ -23,7 +23,7 @@ int render_entities(struct entity **cur_entity)
                .h = 80
         };
         SDL_RenderCopy(
-            game_get()->renderer,
+            game()->renderer,
             cur_tex->image,
             &(cur_tex->section),
             &rect);
@@ -32,7 +32,7 @@ int render_entities(struct entity **cur_entity)
             cam.x, cam.y, WIDTH, HEIGHT
         };
         SDL_RenderCopy(
-            game_get()->renderer,
+            game()->renderer,
             cur_tex->image,
             &rect,
             NULL);

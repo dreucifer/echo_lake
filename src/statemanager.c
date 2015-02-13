@@ -2,7 +2,7 @@
 #include "statemanager.h"
 
 void push_state(struct state* new_state) {
-    struct statenode *new_head = calloc(0, sizeof(struct statenode));
+    struct statenode *new_head = malloc(sizeof(struct statenode));
     new_head->data = new_state;
     new_head->next = statemanager()->head;
     statemanager()->head = new_head;
