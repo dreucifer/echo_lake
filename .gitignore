@@ -42,6 +42,5 @@ configure
 autoscan.log
 missing
 compile
-configure.ac
 depcomp
 install-sh
