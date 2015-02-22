@@ -3,10 +3,11 @@
 
 void push_state(struct state* new_state) {
     struct statenode *new_head = malloc(sizeof(struct statenode));
+    struct statenode **cur_head = &statemanager()->head;
     new_head->data = new_state;
-    new_head->next = statemanager()->head;
-    statemanager()->head = new_head;
-    statemanager()->head->data->onenter();
+    new_head->next = *cur_head;
+    *cur_head = new_head;
+    (*cur_head)->data->onenter();
 }
 
 void pop_state() {

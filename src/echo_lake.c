@@ -83,6 +83,7 @@ int main()
     }
 
     game()->statemanager->push_state(menustate());
+    game()->statemanager->push_state(menustate());
 
     world_pos = (SDL_Point) {
         1200, 1200

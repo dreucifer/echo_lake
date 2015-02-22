@@ -1,8 +1,9 @@
 #include "entitymanager.h"
 
 static void add_entity(struct entity *entity) {
+  struct entity **head = &entitymanager()->entity_list;
     fprintf(stderr, "[INFO] adding entity %s\n", entity->name);
-    HASH_ADD_STR(entitymanager()->entity_list, name, entity);
+    HASH_ADD_STR(*head, name, entity);
 }
 
 static struct entity *get_entity(const char *name)

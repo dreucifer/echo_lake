@@ -10,7 +10,7 @@
 #define COMPONENTS_H
 
 #include <SDL2/SDL.h>
-#include "uthash.h"
+#include <uthash.h>
 #include "entity.h"
 
 /**** Component Definition ****
